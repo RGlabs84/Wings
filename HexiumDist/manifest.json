@@ -1,0 +1,10 @@
+{
+    "name": "Wings_of_the_Valkyrie",
+    "version_number": "1.1.3",
+    "website_url": "https://discord.gg/GTTCnGS6Ym",
+    "description": "Take to the skies with four tiers of majestic runic dragon wings! Features custom flight mechanics, stamina costs, auto-gliding, and procedurally generated woven rune visual effects.",
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.2333",
+        "ValheimModding-Jotunn-2.29.2"
+    ]
+}

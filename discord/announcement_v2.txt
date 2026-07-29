@@ -1,0 +1,15 @@
+@everyone 🌩️ **THE SKIES ARE CALLING. Wings of the Valkyrie is going live shortly!** 🌩️
+
+Tired of walking through the Black Forest? Sick of taking boat rides when you could be soaring above the clouds? It's time to claim your birthright as a true Norse warrior and take flight! 
+
+**Wings of the Valkyrie** introduces a massive, fully physics-based flight system to Valheim. Craft epic glowing, runic dragon wings that react to your momentum, allowing you to soar over mountains, dive-bomb into combat, and auto-glide across the ocean.
+
+🔥 **WHAT TO EXPECT:**
+- **4 Custom Wing Tiers:** Progression from early-game Crude Wings all the way to endgame Dragon Valkyrie Wings.
+- **Dynamic Physics Flight:** Double-jump in mid-air to deploy your wings. Pitch down to dive rapidly, or pull up to stall and land safely!
+- **Stamina-Balanced:** Flapping requires stamina. The better your wings, the faster you fly, the higher your flight ceiling, and the less stamina you drain!
+- **Insane Visuals:** 18-point articulated draconic bone structures covered in a procedural membrane of glowing Norse runes!
+- **Fully Configurable & ServerSync:** Server admins have total control over speeds, stamina drains, crafting costs, and flight ceilings. 
+
+The skies of the Tenth World belong to you now. Go conquer them.
+🔗 **Download on Hexium:** [Insert Hexium Link Here]
