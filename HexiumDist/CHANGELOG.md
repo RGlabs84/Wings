@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.4
+- Fixed wings wrongly deploying while standing on or steering a moving ship. A player on deck is never `IsOnGround()` (the deck is a rigidbody, not terrain), so wave pitch and bob could spike vertical velocity past the auto-glide fall-speed threshold. The flight controller now checks whether you're standing on a ship, the same way it already checks for ground, water, and swimming.
+
 ## 1.1.3
 - Fixed the vanilla cape reappearing over the runic wings. The 1.1.2 approach relied on `forceRenderingOff`, a runtime-only flag that Unity does not copy when the game instantiates the cape onto your skeleton. The cape attachment is now never built in the first place, so no other mod can bring it back and the dropped-item model stays visible.
 - Fixed remote players' wings being completely invisible in multiplayer. Wing tier was being read from a field that Valheim only ever populates on the owning client; it is now read from the networked equipment hash.

@@ -62,7 +62,12 @@ namespace WingsoftheValkyrie
 
         private static void UpdateLocalGlide(Player player, WingsoftheValkyrie.VFX.RuneWingVFX vfx, string wingsName)
         {
-            if (player.IsOnGround() || player.IsSwimming() || player.InWater())
+            // A player standing on a moving ship is not IsOnGround() (the deck is a rigidbody,
+            // not terrain), so wave pitch/bob can spike vertical velocity past the fall-speed
+            // threshold below and wrongly deploy the wings. GetStandingOnShip() is true for
+            // anyone on deck, steering or not, and is a plain physical-state query so it is safe
+            // to check for local and remote players alike.
+            if (player.IsOnGround() || player.IsSwimming() || player.InWater() || player.GetStandingOnShip() != null)
             {
                 vfx.IsGlidingLocal = false;
                 return;
@@ -129,6 +134,7 @@ namespace WingsoftheValkyrie
                 // Owner is on a build that does not publish state (VersionStrictness is Minor,
                 // so a 1.1.x mismatch is possible). Fall back to guessing from vertical motion.
                 gliding = !player.IsOnGround() && !player.IsSwimming() && !player.InWater()
+                          && player.GetStandingOnShip() == null
                           && Mathf.Abs(player.GetVelocity().y) > 2f;
                 vfx.IsGlidingLocal = gliding;
                 return;
@@ -161,7 +167,7 @@ namespace WingsoftheValkyrie
                 var vfx = __instance.GetComponent<WingsoftheValkyrie.VFX.RuneWingVFX>();
                 if (vfx == null) return;
 
-                if (vfx.IsGlidingLocal && !__instance.IsOnGround() && !__instance.IsSwimming() && !__instance.InWater())
+                if (vfx.IsGlidingLocal && !__instance.IsOnGround() && !__instance.IsSwimming() && !__instance.InWater() && __instance.GetStandingOnShip() == null)
                 {
                     Rigidbody rb = __instance.GetComponent<Rigidbody>();
                     if (rb != null)
