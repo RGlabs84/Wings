@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.9.0
+**v2 test line.** 1.9.x builds are test versions for the upcoming 2.0.0 release. They deliberately will not connect to 1.1.x peers — version enforcement is per minor version, and the test line is meant to stay isolated.
+
+- **New skill: Valkyrie Flight.** Flapping and gliding now level a real Valheim skill. Higher levels cut the stamina each flap costs (up to half at level 100), put more lift into every wingbeat (up to +30%), flatten your glide so you sink up to half as slowly for far longer flights, and add a touch of horizontal glide speed. Diving is untouched — pointing yourself at the ground is intent, not something practice should soften. XP rates and every bonus curve are server-configurable in the new "Valkyrie Flight Skill" section.
+- **Wings are much harder to earn.** Crude Wings are now a Bronze Age project: bronze nails plus a mix of hides from the Meadows and Black Forest (deer hide, leather scraps, troll hide, feathers) at a level 3 workbench. Every later tier also costs significantly more — iron nails on Troll wings, linen thread on Lox wings, dragon tears on Dragon wings. Note for upgraders: BepInEx keeps your existing config values, so the new recipe defaults only apply to fresh configs. Delete `wubarrk.wingsofthevalkyrie.cfg` (or update the values by hand) to pick up the new balance.
+- **Custom item icons.** Each wing tier and the new skill has its own icon instead of borrowing the vanilla cape art. The art ships embedded inside the mod DLL, so the mod is still a single file.
+
 ## 1.1.5
 - **Test implementation: controller support.** Valheim keeps keyboard and gamepad on two separate Jump bindings, and the mod only ever read the keyboard one -- so controller players could jump normally but could never unfurl their wings or flap. Both bindings are now read, and any rebinding you have set in the game's own controls menu is respected. Controller feedback is welcome.
 - Jump presses the game itself is ignoring no longer cost you a flap. Typing a space in chat, or pressing the gamepad's confirm button in the inventory, map, store, build menu or radial menu while airborne, used to trigger a flap and burn stamina.

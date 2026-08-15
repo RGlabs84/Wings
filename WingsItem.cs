@@ -42,6 +42,7 @@ namespace WingsoftheValkyrie
                 Requirements = ParseRequirements(ModConfig.CrudeCraftingRequirements.Value)
             });
             StripCapeVisuals(crudeWings.ItemPrefab);
+            ApplyCustomIcon(crudeWings, "wings_crude.png");
             ItemManager.Instance.AddItem(crudeWings);
 
             CustomItem trollWings = new CustomItem(TrollName, "CapeTrollHide", new ItemConfig
@@ -53,6 +54,7 @@ namespace WingsoftheValkyrie
                 Requirements = ParseRequirements(ModConfig.TrollCraftingRequirements.Value)
             });
             StripCapeVisuals(trollWings.ItemPrefab);
+            ApplyCustomIcon(trollWings, "wings_troll.png");
             ItemManager.Instance.AddItem(trollWings);
 
             CustomItem loxWings = new CustomItem(LoxName, "CapeLox", new ItemConfig
@@ -64,6 +66,7 @@ namespace WingsoftheValkyrie
                 Requirements = ParseRequirements(ModConfig.LoxCraftingRequirements.Value)
             });
             StripCapeVisuals(loxWings.ItemPrefab);
+            ApplyCustomIcon(loxWings, "wings_lox.png");
             ItemManager.Instance.AddItem(loxWings);
 
             CustomItem dragonWings = new CustomItem(DragonName, "CapeFeather", new ItemConfig
@@ -75,6 +78,7 @@ namespace WingsoftheValkyrie
                 Requirements = ParseRequirements(ModConfig.DragonCraftingRequirements.Value)
             });
             StripCapeVisuals(dragonWings.ItemPrefab);
+            ApplyCustomIcon(dragonWings, "wings_dragon.png");
             ItemManager.Instance.AddItem(dragonWings);
 
             PrefabManager.OnVanillaPrefabsAvailable -= CreateCustomWings;
@@ -111,6 +115,23 @@ namespace WingsoftheValkyrie
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Swaps the icon inherited from the donor cape for the mod's own embedded art. The
+        /// clone's SharedData is its own instance (Instantiate deep-copies it), so this cannot
+        /// touch the vanilla cape's icon. On any load failure the donor icon is kept, because
+        /// ItemData.GetIcon() indexes m_icons unguarded and must never see an empty array.
+        /// </summary>
+        private static void ApplyCustomIcon(CustomItem item, string iconFileName)
+        {
+            var sprite = IconLoader.Load(iconFileName);
+            if (sprite == null) return;
+
+            var itemDrop = item.ItemPrefab != null ? item.ItemPrefab.GetComponent<ItemDrop>() : null;
+            if (itemDrop == null || itemDrop.m_itemData == null || itemDrop.m_itemData.m_shared == null) return;
+
+            itemDrop.m_itemData.m_shared.m_icons = new[] { sprite };
         }
 
         private static RequirementConfig[] ParseRequirements(string requirementsString)

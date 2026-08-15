@@ -3,7 +3,9 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>WingsoftheValkyrie</AssemblyName>
     <Description>Valheim Wings of the Valkyrie Mod</Description>
-    <Version>1.1.5</Version>
+    <Version>1.9.0</Version>
+    <!-- Gale test-profile deploy target for the DeployLocal step below (Linux path). -->
+    <GaleProfilePlugins>$(HOME)/.local/share/com.kesomannen.gale/valheim/profiles/The Tester/BepInEx/plugins/Wubarrk-Wings_of_the_Valkyrie</GaleProfilePlugins>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -44,5 +46,27 @@
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\libs-Tools\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\libs-Tools\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Facade only: ImageConversionModule is compiled against netstandard 2.1, which net48
+         alone cannot see. Never copied to output; the game supplies the real one. -->
+    <Reference Include="netstandard">
+      <HintPath>..\libs-Tools\netstandard.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
+
+  <!-- Icon art ships inside the DLL so the mod stays a single-file plugin. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/Icons/*.png" />
+  </ItemGroup>
+
+  <!-- Release builds land directly in the Hexium staging folder and the Gale test profile,
+       so the 1.9.x test loop is build-and-launch. -->
+  <Target Name="DeployLocal" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)HexiumDist/WingsoftheValkyrie/plugins" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GaleProfilePlugins)" Condition="Exists('$(GaleProfilePlugins)')" />
+  </Target>
 </Project>

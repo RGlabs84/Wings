@@ -34,7 +34,11 @@ namespace WingsoftheValkyrie
                 {
                     vfx.SetTierColor(GetTierColor(wingsName));
 
-                    if (isLocal) UpdateLocalGlide(__instance, vfx, wingsName);
+                    if (isLocal)
+                    {
+                        UpdateLocalGlide(__instance, vfx, wingsName);
+                        FlyingSkill.AccumulateGlideXP(__instance, vfx.IsGlidingLocal, Time.deltaTime);
+                    }
                     else ReadRemoteState(__instance, vfx);
                 }
 
@@ -75,15 +79,13 @@ namespace WingsoftheValkyrie
 
             if (ValkyrieInput.JumpPressed(player))
             {
-                float staminaCost = 10f;
-                if (wingsName == WingsItem.CrudeName) staminaCost = ModConfig.CrudeFlapStaminaCost.Value;
-                else if (wingsName == WingsItem.TrollName) staminaCost = ModConfig.TrollFlapStaminaCost.Value;
-                else if (wingsName == WingsItem.LoxName) staminaCost = ModConfig.LoxFlapStaminaCost.Value;
-                else if (wingsName == WingsItem.DragonName) staminaCost = ModConfig.DragonFlapStaminaCost.Value;
+                float staminaCost = ModConfig.GetStats(wingsName).FlapStaminaCost
+                                    * (1f - ModConfig.SkillStaminaReduction.Value * FlyingSkill.Factor(player));
 
                 if (player.HaveStamina(staminaCost))
                 {
                     player.UseStamina(staminaCost);
+                    FlyingSkill.AddFlapXP(player);
                     vfx.TriggerFlap();
                     vfx.WantsToFlap = true;
                     vfx.FlapCount++;
@@ -172,35 +174,34 @@ namespace WingsoftheValkyrie
                     Rigidbody rb = __instance.GetComponent<Rigidbody>();
                     if (rb != null)
                     {
-                        float glideSpeed = 15f;
-                        float ceilingLimit = 50f;
-                        float flapForce = 12f;
-
-                        string wingsName = WingsItem.GetEquippedWingsName(__instance);
-                        if (wingsName == WingsItem.CrudeName) { glideSpeed = ModConfig.CrudeGlideSpeed.Value; ceilingLimit = ModConfig.CrudeFlightCeiling.Value; flapForce = ModConfig.CrudeFlapForce.Value; }
-                        else if (wingsName == WingsItem.TrollName) { glideSpeed = ModConfig.TrollGlideSpeed.Value; ceilingLimit = ModConfig.TrollFlightCeiling.Value; flapForce = ModConfig.TrollFlapForce.Value; }
-                        else if (wingsName == WingsItem.LoxName) { glideSpeed = ModConfig.LoxGlideSpeed.Value; ceilingLimit = ModConfig.LoxFlightCeiling.Value; flapForce = ModConfig.LoxFlapForce.Value; }
-                        else if (wingsName == WingsItem.DragonName) { glideSpeed = ModConfig.DragonGlideSpeed.Value; ceilingLimit = ModConfig.DragonFlightCeiling.Value; flapForce = ModConfig.DragonFlapForce.Value; }
+                        WingStats stats = ModConfig.GetStats(WingsItem.GetEquippedWingsName(__instance));
+                        float skillFactor = FlyingSkill.Factor(__instance);
+                        float glideSpeed = stats.GlideSpeed * (1f + ModConfig.SkillGlideSpeedBonus.Value * skillFactor);
+                        float ceilingLimit = stats.FlightCeiling;
+                        float flapForce = stats.FlapForce * (1f + ModConfig.SkillFlapPowerBonus.Value * skillFactor);
 
                         if (vfx.WantsToFlap)
                         {
-                            rb.velocity = new Vector3(rb.velocity.x, flapForce, rb.velocity.z); // Upward lift burst
+                            rb.linearVelocity = new Vector3(rb.linearVelocity.x, flapForce, rb.linearVelocity.z); // Upward lift burst
                             vfx.WantsToFlap = false;
                         }
                         else
                         {
-                            // Automatic descent based on look direction
+                            // Automatic descent based on look direction. Skill flattens the slow
+                            // glide (longer flights) but leaves the full -20f dive available --
+                            // diving is player intent, not something practice should weaken.
                             Vector3 lookDir = __instance.GetLookDir();
-                            float targetDescent = -2f; // Base slow glide
+                            float baseSink = -2f * (1f - ModConfig.SkillGlideSinkReduction.Value * skillFactor);
+                            float targetDescent = baseSink;
                             if (lookDir.y < 0)
                             {
                                 // If looking down, increase descent speed based on how sharply they are looking down (up to -20f)
-                                targetDescent = Mathf.Lerp(-2f, -20f, -lookDir.y);
+                                targetDescent = Mathf.Lerp(baseSink, -20f, -lookDir.y);
                             }
 
-                            if (rb.velocity.y < targetDescent)
+                            if (rb.linearVelocity.y < targetDescent)
                             {
-                                rb.velocity = new Vector3(rb.velocity.x, targetDescent, rb.velocity.z);
+                                rb.linearVelocity = new Vector3(rb.linearVelocity.x, targetDescent, rb.linearVelocity.z);
                             }
                         }
 
@@ -208,9 +209,9 @@ namespace WingsoftheValkyrie
                         if (moveDir.magnitude > 0.1f)
                         {
                             Vector3 targetVelocity = moveDir * glideSpeed;
-                            targetVelocity.y = rb.velocity.y;
+                            targetVelocity.y = rb.linearVelocity.y;
 
-                            rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, 3f * Time.fixedDeltaTime);
+                            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, 3f * Time.fixedDeltaTime);
                         }
 
                         if (ZoneSystem.instance != null)
@@ -219,9 +220,9 @@ namespace WingsoftheValkyrie
 
                             if (__instance.transform.position.y - groundHeight > ceilingLimit)
                             {
-                                if (rb.velocity.y > 0)
+                                if (rb.linearVelocity.y > 0)
                                 {
-                                    rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+                                    rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
                                 }
                             }
                         }

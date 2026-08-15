@@ -11,7 +11,7 @@ namespace WingsoftheValkyrie
     {
         public const string PluginGUID = "wubarrk.wingsofthevalkyrie";
         public const string PluginName = "Wings of the Valkyrie";
-        public const string PluginVersion = "1.1.5";
+        public const string PluginVersion = "1.9.0";
         
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
@@ -20,6 +20,7 @@ namespace WingsoftheValkyrie
             Jotunn.Logger.LogInfo("Wings of the Valkyrie initializing...");
             
             ModConfig.Init(Config);
+            FlyingSkill.Register();
             WingsItem.Init();
             
             harmony.PatchAll();
