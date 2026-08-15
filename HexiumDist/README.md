@@ -1,53 +1,100 @@
 # Wings of the Valkyrie
 *By the grace of the Allfather, the skies of the Tenth World are no longer out of reach.*
 
-**Wings of the Valkyrie** is a massive, physics-based flight overhaul for Valheim. Why trudge through the muddy swamps or sail across treacherous oceans when you can claim your birthright and take to the skies like a true Norse god? 
+**Wings of the Valkyrie** is a massive, physics-based flight overhaul for Valheim. Why trudge through the muddy swamps or sail across treacherous oceans when you can claim your birthright and take to the skies like a true Norse god?
 
-This mod introduces four craftable tiers of majestic, glowing draconic wings, each woven from magical runes that react dynamically to your movement and momentum.
+Four craftable tiers of glowing runic wings await — and with **2.0.0**, flight is no longer just a thing you craft. **It is a thing you learn.** Every wingbeat feeds the new **Valkyrie Flight** skill, every tier bears its own hand-forged icon, and every set of wings must now be *earned* the honest Viking way: with metal, hide, and the occasional tear of a dragon.
 
-## 🦅 Epic Features
-- **Four Tiers of Ascension:** Progress your aerial dominance. Craft Crude Wings from deer hide to survive basic falls, all the way up to the god-tier Dragon Valkyrie Wings forged with Eitr. Each tier grants superior lift, faster glide speeds, and a higher flight ceiling.
-- **Physics-Driven Auto-Gliding:** Leap from a mountain peak and double-jump to unfurl your wings. The wind catches you immediately. Pitch your camera downwards to accelerate into a rapid dive-bomb, or pull up to stall your momentum and land safely.
-- **The Price of Flight:** The Allfather demands stamina. Flapping your wings consumes your energy reserves, keeping flight balanced and immersive. Upgrading to higher tier wings significantly reduces the stamina cost per flap.
-- **Breathtaking Custom Visuals:** Unfurl an 18-point articulated draconic skeleton, procedurally generated in real-time, bound together by a shimmering membrane of woven Norse runes. As you fly, runic energy bleeds from the wingtips into the wind behind you.
-- **Server Admin Control:** ServerSync is strictly enforced! Server admins have absolute control over the configuration, allowing them to balance glide speeds, stamina costs, flight ceilings, and crafting recipes for their specific server.
+---
+
+## ⚠️ Upgrading from 1.1.x
+
+> **Your config upgrades itself.** 2.0.0 stamps a version on its config file and migrates old files on first launch: any setting still at its old default moves to the new 2.0 balance, while anything you or your server admin actually changed is **kept exactly as you set it**. A backup is written beside the config before a single value is touched, and the log lists what moved and what stayed. No config deleting, no lost admin work.
+>
+> **Everyone must update together.** A 2.0.0 client cannot join a 1.1.x server and vice versa — that is deliberate, since recipes, balance, and the skill all changed shape.
+
+---
+
+## 🦅 What Awaits in the Sky
+
+- **The Valkyrie Flight skill:** Flap and glide to grow a true Valheim skill, right in your skills panel. The sky remembers your effort — veterans flap for half the stamina, strike the air with +30% more lift, sink half as slowly on the glide, and cut through the wind faster. And like every skill, death takes its tithe.
+- **Four Tiers of Ascension:** From crude bronze-nailed hides to god-tier wings woven with Eitr and a dragon's grief. Each tier grants superior lift, faster glide, a lighter stamina toll, and a higher flight ceiling.
+- **Physics-Driven Flight:** Leap from a peak and jump again to unfurl your wings — the wind catches you instantly. Flap to climb, pitch your gaze downward to dive-bomb, level off to ride the glide. Land, swim, or step onto a ship's deck and the wings stow themselves.
+- **No Fall Damage While Gliding:** The wind never lets a winged Viking break on the stones. Open wings mean a safe landing, always.
+- **The Price of Flight:** The Allfather demands stamina. Every flap costs energy — higher tiers and higher skill both lighten the tribute, but the sky is never free.
+- **Breathtaking Runic Visuals:** An articulated draconic wing skeleton, procedurally generated in real-time, bound by a shimmering membrane of woven Norse runes. Runic energy bleeds from your wingtips into the wind — and every other player sees your wings beat exactly when yours do, fully synchronised in multiplayer.
+- **Hand-Forged Icons:** Every wing tier and the skill itself carries its own crafted sigil in your inventory. No more borrowed cape art.
+- **Server Admin Sovereignty:** Every stat, recipe, XP rate, and bonus curve is server-enforced config. Admins rule the skies; clients cannot override.
+
+## 🕹️ How to Fly — the 60-Second Saga
+
+1. **Craft wings and wear them** — they live in your cape slot.
+2. **Jump while airborne** to unfurl. Falling fast unfurls them on its own — the wind refuses to waste a Viking.
+3. **Jump again to flap** and climb. Each beat costs stamina.
+4. **Look down to dive** — the steeper your gaze, the faster you fall upon your enemies. Level your eyes to stretch the glide.
+5. **Touch ground, water, or a ship's deck** and the wings fold away.
+
+Every flap and every second on the wind raises **Valkyrie Flight**. Fly often. Fly far. The sky keeps the ledger.
 
 ## 🛠️ The Wing Tiers & Crafting
-*(Note: All stats below are the default values written in the ancient runes. Server admins can rewrite these via the config file!)*
+*(All numbers below are the default runes. Server admins may rewrite every one of them in the config.)*
 
 🟢 **Tier 1: Crude Wings**
-*Tied together with basic hides, these are your first step into the sky. Low ceiling and slow glide.*
-- **Forge:** Workbench (Level 1) | 10x Feathers, 10x Leather Scraps
+*Hides of the lowlands stretched over a bronze-nailed frame. Your first honest step into the sky.*
+- **Forge:** Workbench (Level 3) | 10x Bronze Nails, 10x Deer Hide, 20x Leather Scraps, 5x Troll Hide, 20x Feathers
 - **Glide Speed:** 10 | **Flap Lift:** 15 | **Flight Ceiling:** 120m
 - **Stamina Tribute:** 10 per flap
 
 🔵 **Tier 2: Troll Hide Wings**
-*Woven from the thick blue hide of trolls, granting improved aerodynamics and a lighter stamina burden.*
-- **Forge:** Workbench (Level 2) | 5x Troll Hide, 15x Feathers
+*Woven from the thick blue hide of trolls and riveted with iron, granting keener aerodynamics and a lighter burden.*
+- **Forge:** Workbench (Level 3) | 15x Troll Hide, 10x Iron Nails, 30x Feathers
 - **Glide Speed:** 15 | **Flap Lift:** 18 | **Flight Ceiling:** 135m
 - **Stamina Tribute:** 8 per flap
 
-🟣 **Tier 3: Lox Feathered Cloak**
-*Heavy, powerful wings reinforced with silver. Extremely fast glide and massive lift capable of carrying a fully armored warrior.*
-- **Forge:** Forge (Level 1) | 5x Lox Pelt, 5x Silver
+⚪ **Tier 3: Lox Feathered Cloak**
+*Heavy, powerful wings of lox pelt bound in silver and linen — massive lift fit for a fully armored warrior.*
+- **Forge:** Forge (Level 3) | 10x Lox Pelt, 20x Silver, 10x Linen Thread, 30x Feathers
 - **Glide Speed:** 20 | **Flap Lift:** 22 | **Flight Ceiling:** 160m
 - **Stamina Tribute:** 6 per flap
 
-🟠 **Tier 4: Dragon Valkyrie Wings**
-*The ultimate mastery of the skies. Woven with pure magical Eitr, these god-tier wings grant dominion over the Tenth World.*
-- **Forge:** Galdr Table (Level 1) | 20x Feathers, 5x Eitr
+🟣 **Tier 4: Dragon Valkyrie Wings**
+*Scale, Eitr, and the tears of a dragon, woven into dominion over the Tenth World.*
+- **Forge:** Galdr Table | 40x Feathers, 20x Eitr, 10x Scale Hide, 2x Dragon Tears
 - **Glide Speed:** 30 | **Flap Lift:** 28 | **Flight Ceiling:** 1100m *(Reach the World Tree!)*
 - **Stamina Tribute:** 4 per flap
 
-## ⚔️ Installation
-1. Install **BepInEx** and **Jotunn**.
-2. Place `WingsoftheValkyrie.dll` into your `BepInEx/plugins` folder.
-3. Launch the game once to generate the config file at `BepInEx/config/wubarrk.wingsofthevalkyrie.cfg`.
-4. Configure stamina costs, flap forces, and crafting requirements to your heart's content!
+## ⚔️ The Skill: Valkyrie Flight
+
+The sky is a harsh tutor, but a fair one. **Valkyrie Flight** grows from doing — 0.4 XP per flap, 0.2 XP per second on the glide — and pays you back at every level:
+
+| At skill 100 (scales linearly on the way up) | Default |
+| :--- | :--- |
+| Flap stamina cost | **−50%** |
+| Flap lift | **+30%** |
+| Glide sink rate (longer flights) | **−50%** |
+| Horizontal glide speed | **+15%** |
+
+Diving is untouched by skill — pointing yourself at the ground is intent, and the mountain does not care how practiced you are. Death docks the skill like any other; the Valkyries respect only the living. Every XP rate and bonus curve lives in the config under **"6. Valkyrie Flight Skill"**.
+
+## 📜 Config & Server Sync
+
+Everything binds to `BepInEx/config/wubarrk.wingsofthevalkyrie.cfg` — per-tier ceilings, glide speeds, flap forces, stamina costs, crafting stations, full recipes, and the entire skill section. All gameplay entries are **admin-only and server-enforced**: the server pushes its values to every client live, and non-admins cannot override them. The `[0. Meta] ConfigVersion` line is the migration stamp — leave it be.
+
+## 📥 Installation
+
+**With Gale (recommended):** just install Wings of the Valkyrie — dependencies come with it.
+
+**Manual install:**
+1. Install **[BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)** and **[Jotunn](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/)**.
+2. Drop `WingsoftheValkyrie.dll` into `BepInEx/plugins`.
+3. Take to the skies!
+
+<div align="center">
+  <i>Created with ❤️ by Wubarrk</i>
+</div>
 
 ---
-join the Mists of Avalor Open BETA find it only on [Hexium ![Hexium Logo](data:image/png;base64,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)](https://valheim.hexium.gg/mods/Wubarrk/Mists_of_Avalor_BETA)
-
+join the Mists of Avalor Open BETA find it only on [Hexium](https://valheim.hexium.gg/mods/Wubarrk/Mists_of_Avalor_BETA)
 <br>
 <small>
 

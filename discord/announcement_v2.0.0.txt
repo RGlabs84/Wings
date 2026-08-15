@@ -1,0 +1,20 @@
+@everyone ⚡ **WINGS OF THE VALKYRIE 2.0 IS HERE — FLIGHT IS NO LONGER CRAFTED. IT IS EARNED.** ⚡
+
+The biggest update in the mod's history just landed. v2 turns flying from a thing you build into a thing you *master* — and the sky keeps score.
+
+🪽 **NEW: THE VALKYRIE FLIGHT SKILL**
+Every flap and every second on the wind levels a true Valheim skill, right in your skills panel with its own icon. Veterans of the sky flap for **half the stamina**, strike with **+30% more lift**, sink **half as slowly** on the glide, and cut the wind **faster**. Die, and the Valkyries take their tithe — just like any skill.
+
+⚒️ **WINGS WORTH EARNING**
+No more bird-scaring your way into the clouds with a handful of feathers. Crude Wings are now a proper Bronze Age project — bronze nails and a mix of Meadows and Black Forest hides — and every tier above costs what dominion over the sky *should*: iron nails, silver and linen, and for the Dragon Wings... the tears of a dragon herself.
+
+🎨 **HAND-FORGED ICONS**
+All four wing tiers and the skill carry their own crafted sigils in your inventory. No more borrowed cape art.
+
+🔧 **YOUR CONFIG UPGRADES ITSELF**
+Server admins: 2.0 migrates your config automatically. Anything you customised is kept exactly as you set it, everything still at old defaults moves to the new balance, and a backup is written before a single value is touched. No config deleting. No lost work.
+
+⚠️ **HEADS UP:** 2.0.0 clients and servers must update together — 1.1.x peers cannot connect. And this release is the **final Thunderstore version**: every future update is **Hexium-only**.
+
+The skies of the Tenth World were never free. Now go pay for them in wingbeats.
+🔗 **Download on Hexium:** https://valheim.hexium.gg/mods/Wubarrk/Wings_of_the_Valkyrie
