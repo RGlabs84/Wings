@@ -3,45 +3,46 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>WingsoftheValkyrie</AssemblyName>
     <Description>Valheim Wings of the Valkyrie Mod</Description>
-    <Version>1.0.0</Version>
+    <Version>1.1.5</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <!-- ALL reference assemblies come from the SHARED c:\WubarrkCODING\libs-Tools folder, never from a per-project
+       libs\ copy. That is the standing rule across every mod in this solution root. -->
   <ItemGroup>
-    <Compile Remove="libs\**" />
     <Reference Include="BepInEx">
-      <HintPath>libs\BepInEx.dll</HintPath>
+      <HintPath>..\libs-Tools\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>libs\0Harmony.dll</HintPath>
+      <HintPath>..\libs-Tools\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Jotunn">
-      <HintPath>libs\Jotunn.dll</HintPath>
+      <HintPath>..\libs-Tools\Jotunn.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
-      <HintPath>libs\assembly_valheim.dll</HintPath>
+      <HintPath>..\libs-Tools\assembly_valheim.dll</HintPath>
     </Reference>
     <Reference Include="assembly_utils">
-      <HintPath>libs\assembly_utils.dll</HintPath>
+      <HintPath>..\libs-Tools\assembly_utils.dll</HintPath>
     </Reference>
     <Reference Include="assembly_guiutils">
-      <HintPath>libs\assembly_guiutils.dll</HintPath>
+      <HintPath>..\libs-Tools\assembly_guiutils.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>libs\UnityEngine.dll</HintPath>
+      <HintPath>..\libs-Tools\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\libs-Tools\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>libs\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>..\libs-Tools\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>libs\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>..\libs-Tools\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>libs\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>..\libs-Tools\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

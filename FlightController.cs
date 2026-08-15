@@ -73,7 +73,7 @@ namespace WingsoftheValkyrie
                 return;
             }
 
-            if (ZInput.GetButtonDown("Jump"))
+            if (ValkyrieInput.JumpPressed(player))
             {
                 float staminaCost = 10f;
                 if (wingsName == WingsItem.CrudeName) staminaCost = ModConfig.CrudeFlapStaminaCost.Value;

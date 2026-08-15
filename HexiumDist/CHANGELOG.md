@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.5
+- **Test implementation: controller support.** Valheim keeps keyboard and gamepad on two separate Jump bindings, and the mod only ever read the keyboard one -- so controller players could jump normally but could never unfurl their wings or flap. Both bindings are now read, and any rebinding you have set in the game's own controls menu is respected. Controller feedback is welcome.
+- Jump presses the game itself is ignoring no longer cost you a flap. Typing a space in chat, or pressing the gamepad's confirm button in the inventory, map, store, build menu or radial menu while airborne, used to trigger a flap and burn stamina.
+
 ## 1.1.4
 - Fixed wings wrongly deploying while standing on or steering a moving ship. A player on deck is never `IsOnGround()` (the deck is a rigidbody, not terrain), so wave pitch and bob could spike vertical velocity past the auto-glide fall-speed threshold. The flight controller now checks whether you're standing on a ship, the same way it already checks for ground, water, and swimming.
 

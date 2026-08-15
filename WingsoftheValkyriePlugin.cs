@@ -11,7 +11,7 @@ namespace WingsoftheValkyrie
     {
         public const string PluginGUID = "wubarrk.wingsofthevalkyrie";
         public const string PluginName = "Wings of the Valkyrie";
-        public const string PluginVersion = "1.1.4";
+        public const string PluginVersion = "1.1.5";
         
         private readonly Harmony harmony = new Harmony(PluginGUID);
 
