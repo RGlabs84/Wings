@@ -23,6 +23,14 @@ namespace WingsoftheValkyrie
 
     public static class ModConfig
     {
+        // Where the migration stamp lives. Named here so ConfigMigration can find it in a raw
+        // file that predates the entry existing. Deliberately NOT admin-synced: it describes
+        // the local file's layout, not a gameplay rule the server should push to clients.
+        public const string MetaSection = "0. Meta";
+        public const string ConfigVersionKey = "ConfigVersion";
+
+        public static ConfigEntry<int> ConfigVersion { get; private set; }
+
         public static ConfigEntry<bool> EnableMod { get; private set; }
         public static ConfigEntry<float> GlobalWingSpan { get; private set; }
 
@@ -82,6 +90,13 @@ namespace WingsoftheValkyrie
             var rangeXp = new AcceptableValueRange<float>(0f, 5f);
             var rangeFraction = new AcceptableValueRange<float>(0f, 1f);
 
+            // Must run before the first Bind so it can snapshot the raw file as the previous
+            // version left it.
+            ConfigMigration.Begin(config);
+
+            ConfigVersion = config.Bind(MetaSection, ConfigVersionKey, ConfigMigration.CurrentConfigVersion,
+                "Internal bookkeeping - the layout version of this file, used to carry your settings across mod updates. Do not edit.");
+
             EnableMod = config.Bind("1. General", "EnableMod", true, new ConfigDescription("Enable or disable the Valkyrie Wings mod.", null, adminOnly));
             GlobalWingSpan = config.Bind("1. General", "GlobalWingSpan", 1.0f, new ConfigDescription("Multiplier for the overall size of the wings.", new AcceptableValueRange<float>(0.1f, 5.0f), adminOnly));
 
@@ -122,12 +137,14 @@ namespace WingsoftheValkyrie
             DragonCraftingRequirements = config.Bind("5. Dragon Wings", "CraftingRequirements", "Feathers:40,Eitr:20,ScaleHide:10,DragonTear:2", new ConfigDescription("Required items.", null, adminOnly));
 
             // Valkyrie Flight skill
-            SkillXpPerFlap = config.Bind("6. Valkyrie Flight Skill", "XpPerFlap", 0.5f, new ConfigDescription("Skill XP awarded per wing flap.", rangeXp, adminOnly));
-            SkillXpPerGlideSecond = config.Bind("6. Valkyrie Flight Skill", "XpPerGlideSecond", 0.25f, new ConfigDescription("Skill XP awarded per second spent gliding.", rangeXp, adminOnly));
+            SkillXpPerFlap = config.Bind("6. Valkyrie Flight Skill", "XpPerFlap", 0.4f, new ConfigDescription("Skill XP awarded per wing flap.", rangeXp, adminOnly));
+            SkillXpPerGlideSecond = config.Bind("6. Valkyrie Flight Skill", "XpPerGlideSecond", 0.2f, new ConfigDescription("Skill XP awarded per second spent gliding.", rangeXp, adminOnly));
             SkillStaminaReduction = config.Bind("6. Valkyrie Flight Skill", "StaminaReductionAtMax", 0.5f, new ConfigDescription("Fraction of the flap stamina cost removed at skill level 100.", rangeFraction, adminOnly));
             SkillFlapPowerBonus = config.Bind("6. Valkyrie Flight Skill", "FlapPowerBonusAtMax", 0.3f, new ConfigDescription("Extra flap lift at skill level 100, as a fraction of the tier's base force.", rangeFraction, adminOnly));
             SkillGlideSinkReduction = config.Bind("6. Valkyrie Flight Skill", "GlideSinkReductionAtMax", 0.5f, new ConfigDescription("How much slower you sink while gliding at skill level 100 (longer glides).", rangeFraction, adminOnly));
             SkillGlideSpeedBonus = config.Bind("6. Valkyrie Flight Skill", "GlideSpeedBonusAtMax", 0.15f, new ConfigDescription("Extra horizontal glide speed at skill level 100, as a fraction.", rangeFraction, adminOnly));
+
+            ConfigMigration.Finish(config, ConfigVersion);
         }
 
         /// <summary>Per-tier flight stats; unknown or null names fall back to Crude values.</summary>

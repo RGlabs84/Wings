@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1
+- **Upgrading no longer requires deleting your config.** The mod now stamps a layout version on its config file and migrates old files automatically: any setting still sitting at its old default is moved to the new v2 default, while any value you or your server admin actually changed is preserved untouched. The previous file is backed up beside the config before anything is modified, and the log states exactly what was carried and what was kept.
+- **Valkyrie Flight levels 20% slower.** Testing showed the skill climbing faster than intended, so the default XP rates dropped from 0.5 to 0.4 per flap and from 0.25 to 0.2 per glide-second. The migration applies the new rates to existing files too (unless you had already tuned them yourself).
+
 ## 1.9.0
 **v2 test line.** 1.9.x builds are test versions for the upcoming 2.0.0 release. They deliberately will not connect to 1.1.x peers — version enforcement is per minor version, and the test line is meant to stay isolated.
 
