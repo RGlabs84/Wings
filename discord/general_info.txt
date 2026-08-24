@@ -8,38 +8,64 @@ The gods have granted you dominion over the skies. This scroll contains all the 
 ### 🕹️ MASTERING THE WINDS (FLIGHT CONTROLS)
 - **Taking Flight:** Leap from any cliff or jump into the air, and press `Jump` a second time to unfurl your wings. The magic will catch the wind, entering an **Auto-Glide**. 
 - **Flapping (Ascension):** Press `Jump` while gliding to thrust your wings downwards, granting a burst of vertical lift. Be warned: the Allfather demands energy, and every flap consumes Stamina. If your stamina depletes, you can no longer climb!
+- **Earning the Beat:** The greater wings will not answer a beginner. Troll, Lox and Dragon wings each demand a minimum **Valkyrie Flight** level before they will flap at all (15, 30 and 50 by default). They will always unfurl and always glide — and gliding is what earns the skill — so you can never be stranded, only humbled.
 - **Diving:** While gliding, look down towards the earth to angle your wings and rapidly accelerate your descent. Perfect for escaping drakes or dropping into a fight!
 - **Odin's Protection (No Fall Damage):** As long as your wings are actively deployed and glowing, you are immune to the shattering bones of a long fall.
 - **The Flight Ceiling:** You cannot breach the realm of Asgard! Each wing tier has a maximum altitude above the ground. If you fly too high, the air grows thin and flapping will no longer grant upward lift until you descend.
+- **The Ceiling Is Earned:** As of 2.0.1 that ceiling belongs to your *skill*, not merely your wings. The height listed for each tier is what a master at **Valkyrie Flight 100** reaches; at level 0 you claim only about a third of it, and the rest rises with you as you learn. The same Dragon wings that carry a veteran to 1300m will hold a newcomer near 455m.
+
+---
+
+### ⚔️ THE SKILL: VALKYRIE FLIGHT
+Every wingbeat and every second on the wind raises a true Valheim skill, sitting in your skills panel alongside Running and Swords. At level 100 a master flaps for 45% of the stamina, strikes the air with +50% lift, sinks 60% slower on a level glide, glides 35% faster, and unlocks the full flight ceiling of whatever wings they wear. At level 0, they have none of that.
+
+Diving is the one thing skill never touches — pointing yourself at the ground is intent, not practice. And death docks the skill like any other; the Valkyries respect only the living.
+
+---
+
+### 📖 THE FLIGHT LOGBOOK
+Your character keeps its own saga of the sky. Open the console and type:
+- `wov log` — time flown, distance, flights, wingbeats, and your records: highest altitude, longest flight, top speed, steepest stoop
+- `wov oddities` — the stranger corners: hours flown by night, times you ran dry mid-air, times the wings refused you, where you tend to land, biomes crossed, and time spent in each tier
+- `wov export` — writes the server's flight statistics file out now
+- `wov where` — where that file lives
+
+The logbook rides in your character save, so it follows you across worlds and servers. Every Viking keeps their own. Set `EnableFlightLog` to false if you would rather go uncounted.
+
+**Asking BarrkBOT.** Everything the logbook measures happens on YOUR machine, so your game sends its totals up to the server roughly once a minute, and the server gathers everyone's into one file. That is what BarrkBOT reads when you ask him how long you have flown, how far, or how high. Set `PublishFlightStats` to false if you want your logbook kept private — you lose nothing but your place in the server's tally. Everyone needs 2.0.1 for this: a 2.0.0 client never reports and simply will not appear.
 
 ---
 
 ### 🛠️ THE WING TIERS & CRAFTING
-*(Note: All stats below are the default values written in the ancient runes. Server admins can rewrite these via the config file!)*
+*(Note: All stats below are default values. Server admins can customize recipes and stats via the config file! Stats are shown as novice → master, because every one of them now depends on your Valkyrie Flight level.)*
 
 🟢 **Tier 1: Crude Wings**
-*Tied together with basic hides, these are your first step into the sky. Low ceiling and slow glide.*
-- **Forge:** Workbench (Level 1) | 10x Feathers, 10x Leather Scraps
-- **Glide Speed:** 10 | **Flap Lift:** 15 | **Flight Ceiling:** 120m
-- **Stamina Tribute:** 10 per flap
+*Hides of the lowlands stretched over a bronze-nailed frame. Your first honest step into the sky.*
+- **Crafting Station:** Workbench (Level 3)
+- **Recipe:** 10x Bronze Nails, 10x Deer Hide, 20x Leather Scraps, 5x Troll Hide, 20x Feathers
+- **Stats:** Glide Speed: 8 → 10.8 | Flap Lift: 11 → 16.5 | Flight Ceiling: 46m → 130m | Stamina: 16 → 7.2/flap
+- **To Flap:** no requirement — these are the wings that teach you
 
 🔵 **Tier 2: Troll Hide Wings**
-*Woven from the thick blue hide of trolls, granting improved aerodynamics and a lighter stamina burden.*
-- **Forge:** Workbench (Level 2) | 5x Troll Hide, 15x Feathers
-- **Glide Speed:** 15 | **Flap Lift:** 18 | **Flight Ceiling:** 135m
-- **Stamina Tribute:** 8 per flap
+*Woven from the thick blue hide of trolls and riveted with iron, granting improved aerodynamics and lighter stamina.*
+- **Crafting Station:** Workbench (Level 3)
+- **Recipe:** 15x Troll Hide, 10x Iron Nails, 30x Feathers
+- **Stats:** Glide Speed: 12 → 16.2 | Flap Lift: 13 → 19.5 | Flight Ceiling: 53m → 150m | Stamina: 13 → 5.9/flap
+- **To Flap:** Valkyrie Flight 15
 
-🟣 **Tier 3: Lox Feathered Cloak**
-*Heavy, powerful wings reinforced with silver. Extremely fast glide and massive lift capable of carrying a fully armored warrior.*
-- **Forge:** Forge (Level 1) | 5x Lox Pelt, 5x Silver
-- **Glide Speed:** 20 | **Flap Lift:** 22 | **Flight Ceiling:** 160m
-- **Stamina Tribute:** 6 per flap
+⚪ **Tier 3: Lox Feathered Cloak**
+*Heavy, powerful wings bound in silver and linen — massive lift fit for a fully armored warrior.*
+- **Crafting Station:** Forge (Level 3)
+- **Recipe:** 10x Lox Pelt, 20x Silver, 10x Linen Thread, 30x Feathers
+- **Stats:** Glide Speed: 16 → 21.6 | Flap Lift: 16 → 24 | Flight Ceiling: 67m → 190m | Stamina: 10 → 4.5/flap
+- **To Flap:** Valkyrie Flight 30
 
-🟠 **Tier 4: Dragon Valkyrie Wings**
-*The ultimate mastery of the skies. Woven with pure magical Eitr, these god-tier wings grant dominion over the Tenth World.*
-- **Forge:** Galdr Table (Level 1) | 20x Feathers, 5x Eitr
-- **Glide Speed:** 30 | **Flap Lift:** 28 | **Flight Ceiling:** 1100m *(Reach the World Tree!)*
-- **Stamina Tribute:** 4 per flap
+🟣 **Tier 4: Dragon Valkyrie Wings**
+*Scale, Eitr, and the tears of a dragon, granting ultimate dominion over the Tenth World.*
+- **Crafting Station:** Galdr Table (Level 1)
+- **Recipe:** 40x Feathers, 20x Eitr, 10x Scale Hide, 2x Dragon Tears
+- **Stats:** Glide Speed: 24 → 32.4 | Flap Lift: 20 → 30 | Flight Ceiling: 455m → 1300m | Stamina: 7 → 3.2/flap
+- **To Flap:** Valkyrie Flight 50
 
 ---
 
@@ -47,4 +73,6 @@ The gods have granted you dominion over the skies. This scroll contains all the 
 - **ServerSync is absolute!** If you are running this mod on a dedicated server, install it on both the server and the clients. 
 - Only Server Admins possess the authority to modify the configuration file (`BepInEx/config/wubarrk.wingsofthevalkyrie.cfg`).
 - Changing the config on the server will automatically lock and sync the settings to all connected warriors instantly. No relogging required.
-- You can completely customize crafting requirements, stamina costs, speeds, and forces to balance the skies perfectly for your server's saga.
+- You can completely customize crafting requirements, stamina costs, speeds, forces, skill requirements and the whole skill curve to balance the skies perfectly for your server's saga.
+- Prefer the old 2.0.0 feel? Set `CeilingAtNovice` to 1 and every `MinSkillToFlap` to 0 — altitude and flapping stop being gated entirely.
+- The `7. Flight Logbook` section is deliberately NOT server-synced. Whether your own flights are written down is your business, not the server's.

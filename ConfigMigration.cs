@@ -29,7 +29,9 @@ namespace WingsoftheValkyrie
         //       both live 1.1.x files (old recipe defaults) and 1.9.0 test files (the skill
         //       XP rates as first shipped, before the -20% learning-rate tune).
         //   1 = the v2 layout: Bronze Age recipes, raised station levels, tuned XP rates.
-        public const int CurrentConfigVersion = 1;
+        //   2 = the 2.0.1 "earn the sky" balance: per-tier flight stats rebased so the listed
+        //       numbers are what MASTERY buys, with the skill bonus curves widened to match.
+        public const int CurrentConfigVersion = 2;
 
         public sealed class Rebase
         {
@@ -56,6 +58,40 @@ namespace WingsoftheValkyrie
                     // 1.9.0 test builds shipped the skill XP 20% hotter than it ended up.
                     new Rebase { Section = "6. Valkyrie Flight Skill", Key = "XpPerFlap", OldDefaults = new[] { "0.5" } },
                     new Rebase { Section = "6. Valkyrie Flight Skill", Key = "XpPerGlideSecond", OldDefaults = new[] { "0.25" } },
+                }
+            },
+            // 2.0.1 flipped every tier from "the listed stat is what you get" to "the listed
+            // stat is what mastery buys". Bases came down, the skill bonus curves went up, and
+            // the ceiling became skill-scaled. Every flight stat below carries the SAME default
+            // through 1.1.x and 2.0.0 -- neither release retuned them -- so one old default per
+            // slot covers a file arriving from either version. XP rates are deliberately absent:
+            // 2.0.1 left the learning rate alone and lets the new gates do the work.
+            { 2, new[]
+                {
+                    new Rebase { Section = "2. Crude Wings", Key = "FlightCeiling", OldDefaults = new[] { "120" } },
+                    new Rebase { Section = "2. Crude Wings", Key = "GlideSpeed", OldDefaults = new[] { "10" } },
+                    new Rebase { Section = "2. Crude Wings", Key = "FlapForce", OldDefaults = new[] { "15" } },
+                    new Rebase { Section = "2. Crude Wings", Key = "FlapStaminaCost", OldDefaults = new[] { "10" } },
+
+                    new Rebase { Section = "3. Troll Wings", Key = "FlightCeiling", OldDefaults = new[] { "135" } },
+                    new Rebase { Section = "3. Troll Wings", Key = "GlideSpeed", OldDefaults = new[] { "15" } },
+                    new Rebase { Section = "3. Troll Wings", Key = "FlapForce", OldDefaults = new[] { "18" } },
+                    new Rebase { Section = "3. Troll Wings", Key = "FlapStaminaCost", OldDefaults = new[] { "8" } },
+
+                    new Rebase { Section = "4. Lox Wings", Key = "FlightCeiling", OldDefaults = new[] { "160" } },
+                    new Rebase { Section = "4. Lox Wings", Key = "GlideSpeed", OldDefaults = new[] { "20" } },
+                    new Rebase { Section = "4. Lox Wings", Key = "FlapForce", OldDefaults = new[] { "22" } },
+                    new Rebase { Section = "4. Lox Wings", Key = "FlapStaminaCost", OldDefaults = new[] { "6" } },
+
+                    new Rebase { Section = "5. Dragon Wings", Key = "FlightCeiling", OldDefaults = new[] { "1100" } },
+                    new Rebase { Section = "5. Dragon Wings", Key = "GlideSpeed", OldDefaults = new[] { "30" } },
+                    new Rebase { Section = "5. Dragon Wings", Key = "FlapForce", OldDefaults = new[] { "28" } },
+                    new Rebase { Section = "5. Dragon Wings", Key = "FlapStaminaCost", OldDefaults = new[] { "4" } },
+
+                    new Rebase { Section = "6. Valkyrie Flight Skill", Key = "StaminaReductionAtMax", OldDefaults = new[] { "0.5" } },
+                    new Rebase { Section = "6. Valkyrie Flight Skill", Key = "FlapPowerBonusAtMax", OldDefaults = new[] { "0.3" } },
+                    new Rebase { Section = "6. Valkyrie Flight Skill", Key = "GlideSinkReductionAtMax", OldDefaults = new[] { "0.5" } },
+                    new Rebase { Section = "6. Valkyrie Flight Skill", Key = "GlideSpeedBonusAtMax", OldDefaults = new[] { "0.15" } },
                 }
             }
         };
@@ -90,7 +126,7 @@ namespace WingsoftheValkyrie
                 if (_fileVersion >= CurrentConfigVersion) return;
 
                 Backup(path, _fileVersion);
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Migrating {Path.GetFileName(path)} from config version {_fileVersion} to {CurrentConfigVersion}. Values you changed are kept; values still at their old defaults move to the new v2 defaults. The previous file is backed up beside it.");
+                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Migrating {Path.GetFileName(path)} from config version {_fileVersion} to {CurrentConfigVersion}. Values you changed are kept; values still at their old defaults move to the new ones. The previous file is backed up beside it.");
 
                 PlanRebases();
             }

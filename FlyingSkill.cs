@@ -31,6 +31,11 @@ namespace WingsoftheValkyrie
             });
         }
 
+        /// <summary>Whether the skill actually registered. When it did not, nothing can raise it,
+        /// so every gate that depends on it has to stand aside rather than lock a player out of
+        /// flight they can no longer earn their way into.</summary>
+        public static bool IsAvailable => SkillType != Skills.SkillType.None;
+
         /// <summary>Skill factor 0..1 (level/100) used to scale flight stats. 0 when unavailable.</summary>
         public static float Factor(Player player)
         {
@@ -38,6 +43,16 @@ namespace WingsoftheValkyrie
 
             Skills skills = player.GetSkills();
             return skills != null ? skills.GetSkillFactor(SkillType) : 0f;
+        }
+
+        /// <summary>Skill level 0..100, as shown in the skills panel. 0 when unavailable, which
+        /// is the safe answer: an unregistered skill must not hand out flight it did not earn.</summary>
+        public static float Level(Player player)
+        {
+            if (player == null || SkillType == Skills.SkillType.None) return 0f;
+
+            Skills skills = player.GetSkills();
+            return skills != null ? skills.GetSkillLevel(SkillType) : 0f;
         }
 
         public static void AddFlapXP(Player player)

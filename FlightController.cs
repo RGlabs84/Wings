@@ -29,6 +29,7 @@ namespace WingsoftheValkyrie
                 if (wingsName == null)
                 {
                     vfx.IsGlidingLocal = false;
+                    if (isLocal) FlightLog.Tick(__instance, false, null, Time.deltaTime);
                 }
                 else
                 {
@@ -38,6 +39,7 @@ namespace WingsoftheValkyrie
                     {
                         UpdateLocalGlide(__instance, vfx, wingsName);
                         FlyingSkill.AccumulateGlideXP(__instance, vfx.IsGlidingLocal, Time.deltaTime);
+                        FlightLog.Tick(__instance, vfx.IsGlidingLocal, wingsName, Time.deltaTime);
                     }
                     else ReadRemoteState(__instance, vfx);
                 }
@@ -79,20 +81,40 @@ namespace WingsoftheValkyrie
 
             if (ValkyrieInput.JumpPressed(player))
             {
-                float staminaCost = ModConfig.GetStats(wingsName).FlapStaminaCost
-                                    * (1f - ModConfig.SkillStaminaReduction.Value * FlyingSkill.Factor(player));
+                WingStats stats = ModConfig.GetStats(wingsName);
 
-                if (player.HaveStamina(staminaCost))
+                // Powered flight is earned, not bought. Below the tier's requirement the wings
+                // still open and still glide -- and gliding is what pays for the skill -- so a
+                // player who crafts straight into Dragon wings is slowed down, never stranded.
+                //
+                // Gated on IsAvailable so a failure to register the skill cannot brick flight: a
+                // player who has no way to gain levels must not be held to a level requirement.
+                if (FlyingSkill.IsAvailable && FlyingSkill.Level(player) < stats.MinSkillToFlap)
                 {
-                    player.UseStamina(staminaCost);
-                    FlyingSkill.AddFlapXP(player);
-                    vfx.TriggerFlap();
-                    vfx.WantsToFlap = true;
-                    vfx.FlapCount++;
+                    vfx.IsGlidingLocal = true;
+                    FlightLog.NoteSkillDenied();
+                    player.Message(MessageHud.MessageType.Center,
+                        $"These wings will not beat for you yet - Valkyrie Flight {Mathf.RoundToInt(stats.MinSkillToFlap)} required. Glide to learn.");
                 }
                 else
                 {
-                    player.Message(MessageHud.MessageType.Center, "Not enough stamina to flap!");
+                    float staminaCost = stats.FlapStaminaCost
+                                        * (1f - ModConfig.SkillStaminaReduction.Value * FlyingSkill.Factor(player));
+
+                    if (player.HaveStamina(staminaCost))
+                    {
+                        player.UseStamina(staminaCost);
+                        FlyingSkill.AddFlapXP(player);
+                        FlightLog.NoteFlap();
+                        vfx.TriggerFlap();
+                        vfx.WantsToFlap = true;
+                        vfx.FlapCount++;
+                    }
+                    else
+                    {
+                        FlightLog.NoteStaminaDenied();
+                        player.Message(MessageHud.MessageType.Center, "Not enough stamina to flap!");
+                    }
                 }
             }
 
@@ -177,8 +199,16 @@ namespace WingsoftheValkyrie
                         WingStats stats = ModConfig.GetStats(WingsItem.GetEquippedWingsName(__instance));
                         float skillFactor = FlyingSkill.Factor(__instance);
                         float glideSpeed = stats.GlideSpeed * (1f + ModConfig.SkillGlideSpeedBonus.Value * skillFactor);
-                        float ceilingLimit = stats.FlightCeiling;
                         float flapForce = stats.FlapForce * (1f + ModConfig.SkillFlapPowerBonus.Value * skillFactor);
+
+                        // Altitude is the headline thing the skill buys. A tier's FlightCeiling
+                        // is what MASTERY reaches; a novice on the same wings is held far lower
+                        // and has to climb the skill to climb the sky. If the skill never
+                        // registered, the tier's own ceiling stands unmodified -- the same
+                        // fail-open the flap gate takes.
+                        float ceilingLimit = FlyingSkill.IsAvailable
+                            ? stats.FlightCeiling * Mathf.Lerp(ModConfig.CeilingAtNovice.Value, 1f, skillFactor)
+                            : stats.FlightCeiling;
 
                         if (vfx.WantsToFlap)
                         {
@@ -188,15 +218,17 @@ namespace WingsoftheValkyrie
                         else
                         {
                             // Automatic descent based on look direction. Skill flattens the slow
-                            // glide (longer flights) but leaves the full -20f dive available --
+                            // glide (longer flights) but leaves the full dive available --
                             // diving is player intent, not something practice should weaken.
                             Vector3 lookDir = __instance.GetLookDir();
-                            float baseSink = -2f * (1f - ModConfig.SkillGlideSinkReduction.Value * skillFactor);
+                            float baseSink = -ModConfig.BaseGlideSinkRate.Value
+                                             * (1f - ModConfig.SkillGlideSinkReduction.Value * skillFactor);
                             float targetDescent = baseSink;
                             if (lookDir.y < 0)
                             {
-                                // If looking down, increase descent speed based on how sharply they are looking down (up to -20f)
-                                targetDescent = Mathf.Lerp(baseSink, -20f, -lookDir.y);
+                                // Looking down trades altitude for speed, all the way to a full
+                                // vertical stoop at MaxDiveSpeed.
+                                targetDescent = Mathf.Lerp(baseSink, -ModConfig.MaxDiveSpeed.Value, -lookDir.y);
                             }
 
                             if (rb.linearVelocity.y < targetDescent)

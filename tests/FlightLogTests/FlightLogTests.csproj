@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AssemblyName>FlightLogTests</AssemblyName>
+    <!-- The stubs deliberately declare fields nothing in the harness assigns. -->
+    <NoWarn>CS0649;CS0414;CS0169</NoWarn>
+  </PropertyGroup>
+
+  <!-- The REAL mod sources, compiled against the stubs in this folder. Not copies: a test
+       that exercises a copy of the code proves nothing about the code that ships. -->
+  <ItemGroup>
+    <Compile Include="../../FlightSaga.cs" />
+    <Compile Include="../../FlightLog.cs" />
+    <Compile Include="../../FlightReport.cs" />
+  </ItemGroup>
+</Project>

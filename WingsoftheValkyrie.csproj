@@ -3,7 +3,7 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>WingsoftheValkyrie</AssemblyName>
     <Description>Valheim Wings of the Valkyrie Mod</Description>
-    <Version>2.0.0</Version>
+    <Version>2.0.2</Version>
     <!-- Gale test-profile deploy target for the DeployLocal step below (Linux path). -->
     <GaleProfilePlugins>$(HOME)/.local/share/com.kesomannen.gale/valheim/profiles/The Tester/BepInEx/plugins/Wubarrk-Wings_of_the_Valkyrie</GaleProfilePlugins>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -56,6 +56,15 @@
       <HintPath>..\libs-Tools\netstandard.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <!-- tests/ holds standalone net8 harnesses that compile the mod's own source files against
+       stubs (see tests/README.md). The SDK globs **/*.cs by default, so they must be removed
+       explicitly or the plugin build would try to compile the harnesses and their stubs. -->
+  <ItemGroup>
+    <Compile Remove="tests/**" />
+    <None Remove="tests/**" />
+    <EmbeddedResource Remove="tests/**" />
   </ItemGroup>
 
   <!-- Icon art ships inside the DLL so the mod stays a single-file plugin. -->
