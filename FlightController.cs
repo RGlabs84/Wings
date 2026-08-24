@@ -12,6 +12,12 @@ namespace WingsoftheValkyrie
         private static readonly int ZdoGliding = "wotv_gliding".GetStableHashCode();
         private static readonly int ZdoFlapCount = "wotv_flapcount".GetStableHashCode();
 
+        // The tier the owner is *actually wearing*. Published because a remote player's model is
+        // not evidence of it: VisEquipment carries the post-vanity shoulder hash, so an
+        // AzuExtendedPlayerInventory costume would otherwise hang rune wings on someone who owns
+        // none, and strip them from someone who does.
+        private static readonly int ZdoWings = "wotv_wings".GetStableHashCode();
+
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         public static void UpdatePostfix(Player __instance)
@@ -24,7 +30,9 @@ namespace WingsoftheValkyrie
                 if (vfx == null) vfx = __instance.gameObject.AddComponent<WingsoftheValkyrie.VFX.RuneWingVFX>();
 
                 bool isLocal = __instance == Player.m_localPlayer;
-                string wingsName = WingsItem.GetEquippedWingsName(__instance);
+                string wingsName = isLocal
+                    ? WingsItem.GetEquippedWingsName(__instance)   // our own equipment, never our costume
+                    : ReadRemoteWings(__instance, vfx);            // what the owner says it is wearing
 
                 if (wingsName == null)
                 {
@@ -45,7 +53,7 @@ namespace WingsoftheValkyrie
                 }
 
                 // Published unconditionally so unequipping mid-air clears the flag for everyone.
-                if (isLocal) PublishState(vfx);
+                if (isLocal) PublishState(vfx, wingsName);
 
                 vfx.SetGlidingState(vfx.IsGlidingLocal);
             }
@@ -68,11 +76,11 @@ namespace WingsoftheValkyrie
 
         private static void UpdateLocalGlide(Player player, WingsoftheValkyrie.VFX.RuneWingVFX vfx, string wingsName)
         {
-            // A player standing on a moving ship is not IsOnGround() (the deck is a rigidbody,
-            // not terrain), so wave pitch/bob can spike vertical velocity past the fall-speed
-            // threshold below and wrongly deploy the wings. GetStandingOnShip() is true for
-            // anyone on deck, steering or not, and is a plain physical-state query so it is safe
-            // to check for local and remote players alike.
+            // GetStandingOnShip() is kept for clarity, but be aware it decides nothing here: it
+            // opens with `if (!IsOnGround()) return null`, so it can only be non-null when the
+            // first clause has already matched. Standing on a deck IS ground contact -- the
+            // deck's rigidbody becomes m_lastGroundBody -- so IsOnGround() covers the still case
+            // on its own. The case it cannot cover is handled at the auto-deploy test below.
             if (player.IsOnGround() || player.IsSwimming() || player.InWater() || player.GetStandingOnShip() != null)
             {
                 vfx.IsGlidingLocal = false;
@@ -120,8 +128,24 @@ namespace WingsoftheValkyrie
 
             if (!vfx.IsGlidingLocal)
             {
-                // Only auto-deploy if falling fast, or if the user actively flaps
-                if (vfx.WantsToFlap || player.GetVelocity().y < -5f)
+                // Only auto-deploy if falling fast, or if the user actively flaps.
+                //
+                // The fall-speed half has to stand down aboard a ship. A swell dropping the deck
+                // out from under you is a fast fall you did not choose, and 1.1.4's ship guard
+                // cannot catch it: GetStandingOnShip() early-outs on !IsOnGround(), so it goes
+                // null at the exact instant the wave breaks contact and throws you. It only ever
+                // agreed with IsOnGround(), which is why the wings still opened on every swell.
+                //
+                // InNumShipVolumes is the test that survives it. The ship's volume trigger keeps
+                // counting you as aboard whether or not your feet are on the planks, so it stays
+                // set through the airborne part of the bob. The volume is sized to the hull, so a
+                // real fall from the sky has long since passed -5 m/s and opened the wings before
+                // ever reaching it.
+                //
+                // Flapping is deliberately left alone: taking off from a deck is player intent.
+                bool aboardShip = player.InNumShipVolumes > 0;
+
+                if (vfx.WantsToFlap || (!aboardShip && player.GetVelocity().y < -5f))
                 {
                     vfx.IsGlidingLocal = true;
                 }
@@ -133,7 +157,7 @@ namespace WingsoftheValkyrie
             }
         }
 
-        private static void PublishState(WingsoftheValkyrie.VFX.RuneWingVFX vfx)
+        private static void PublishState(WingsoftheValkyrie.VFX.RuneWingVFX vfx, string wingsName)
         {
             var nview = vfx.NView;
             if (nview == null || !nview.IsValid() || !nview.IsOwner()) return;
@@ -146,6 +170,30 @@ namespace WingsoftheValkyrie
 
             if (zdo.GetInt(ZdoFlapCount, 0) != vfx.FlapCount)
                 zdo.Set(ZdoFlapCount, vfx.FlapCount);
+
+            // Written even when it is 0, and so written on the very first frame: a *missing* key
+            // is how a reader tells an owner wearing no wings from an owner on a build too old to
+            // say either way. Testing the presence of the key, not its value, keeps those apart.
+            int wingsHash = WingsItem.GetHashFromWingsName(wingsName);
+            if (!zdo.GetInt(ZdoWings, out int publishedWings) || publishedWings != wingsHash)
+                zdo.Set(ZdoWings, wingsHash);
+        }
+
+        /// <summary>
+        /// The tier a remote player is wearing, taken from the owner rather than from their model.
+        /// </summary>
+        private static string ReadRemoteWings(Player player, WingsoftheValkyrie.VFX.RuneWingVFX vfx)
+        {
+            var nview = vfx.NView;
+            ZDO zdo = (nview != null && nview.IsValid()) ? nview.GetZDO() : null;
+
+            if (zdo != null && zdo.GetInt(ZdoWings, out int wingsHash))
+                return WingsItem.GetWingsNameFromHash(wingsHash);
+
+            // Owner is on a build that does not publish the tier (VersionStrictness is Minor, so a
+            // 2.0.x mismatch is possible). Their model is all that is left to go on -- and it is a
+            // costume as far as we know, so this is a drawing hint and nothing more.
+            return WingsItem.GetVisualWingsName(player);
         }
 
         private static void ReadRemoteState(Player player, WingsoftheValkyrie.VFX.RuneWingVFX vfx)
@@ -159,6 +207,7 @@ namespace WingsoftheValkyrie
                 // so a 1.1.x mismatch is possible). Fall back to guessing from vertical motion.
                 gliding = !player.IsOnGround() && !player.IsSwimming() && !player.InWater()
                           && player.GetStandingOnShip() == null
+                          && player.InNumShipVolumes == 0   // wave bob, same blind spot as above
                           && Mathf.Abs(player.GetVelocity().y) > 2f;
                 vfx.IsGlidingLocal = gliding;
                 return;

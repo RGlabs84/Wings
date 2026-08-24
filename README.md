@@ -14,6 +14,10 @@ Four craftable tiers of glowing runic wings await — and with **2.0.0**, flight
 > **Coming from 1.1.x?** A 2.0.x client cannot join a 1.1.x server and vice versa — that is deliberate, since recipes, balance, and the skill all changed shape.
 >
 > **Coming from 2.0.0?** Patch releases still talk to each other, so a 2.0.1 client will connect to a 2.0.0 server. It just won't fly by the same rules: the 2.0.1 balance knobs don't exist on a 2.0.0 server to be synced, so update both ends together if you want everyone earning the sky at the same rate.
+>
+> **Coming from 2.0.2?** Nothing in your config changes, and a 2.0.3 client still connects to a 2.0.2 server. One behaviour does change: transforming some other back item into the wings through **AzuExtendedPlayerInventory's vanity slots** used to hand over real flight. It no longer does — flight comes from the wings you actually have equipped, and from nothing else. Real wings worn *underneath* a vanity cape still fly exactly as they always have.
+>
+> **Coming from 2.0.3?** The boat fix is decided entirely on your own machine, so updating your game is enough — a 2.0.4 client behaves itself on a 2.0.2 or 2.0.3 server, with nothing to change at the server end. Shipmates still on an older build will keep opening their wings on the swell until they update too.
 
 ---
 

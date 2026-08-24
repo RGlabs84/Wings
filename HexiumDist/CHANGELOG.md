@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.0.4
+**The boat fix that never was.** 1.1.4 announced that the wings had stopped snapping open on a ship's deck. They had not, and this is the release where they actually do. Nothing else changes -- no balance, recipe or config value is touched -- and because the whole decision is made on your own machine, **updating your own game is enough**: a 2.0.4 client behaves itself on a 2.0.2 or 2.0.3 server with nothing to change at the server end.
+
+- **The wings no longer open when a swell drops the deck out from under you.** The check 1.1.4 added could never fire. Valheim's own `GetStandingOnShip()` gives up the instant your feet leave the planks -- which is precisely the instant a wave throws you -- so the guard went blank exactly when it was needed, and the deck falling away read as a fall. The mod now asks whether you are **aboard** rather than whether you are **standing**, and that stays true right through the bob. Flapping from a deck still works: taking off from your own longship is intent, not an accident.
+- **Your shipmates will keep flaring until they update.** Whether someone's wings are open is decided on their machine and reported to yours, so a sailor still on 2.0.3 or older opens theirs on every swell no matter which build you are on. (The guess the mod falls back to for clients too old to report at all got the same correction.)
+
+## 2.0.3
+**A costume is not a pair of wings.** A player reported that transforming any back item into the Wings of the Valkyrie through AzuExtendedPlayerInventory's vanity system handed over real flight -- gliding, flapping, wingbeats, the lot -- while an ordinary Deer Cape stayed on their shoulders and the wings themselves went uncrafted. It does not any more. Nothing about flying itself changes, no balance, recipe or config value is touched, and a 2.0.3 client still connects to a 2.0.2 server.
+
+- **Flight is granted by what you have equipped, never by what you look like.** The mod was asking the player *model* what was on its back, and telling the model to lie is exactly what a vanity slot is for. It now asks the shoulder slot itself. That closes the loophole from both ends at once: a costume of the wings grants nothing, and real wings worn underneath somebody else's costume fly exactly as they always did.
+- **Other fliers are drawn from what their own game reports**, rather than from what their character appears to be wearing, so a costume across the server no longer sprouts rune wings on your screen -- and a pilot hiding real wings under a cape keeps their trails. Anyone still on 2.0.2 or older does not report it, and is drawn the old way.
+- **Choosing the wings as a costume now shows nothing on your back**, which is what the wings look like whenever you are not flying: they are woven out of runes in the air, not cloth on your shoulders.
+
 ## 2.0.2
 **Nothing changes in the air.** This release is entirely about the flight statistics file the server publishes for BarrkBOT — the numbers were being written correctly all along, and almost none of them were reaching the bot. No flight behaviour, balance, recipe or config value is touched, and because version enforcement is per minor version, a 2.0.2 client and a 2.0.1 server still connect happily. Update the server to get the benefit.
 

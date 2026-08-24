@@ -186,7 +186,7 @@ try
           doc.RootElement.TryGetProperty("players", out var pl) && pl.EnumerateObject().Count() == 0);
     Check("empty export still carries generated_at / source / schema_version",
           doc.RootElement.TryGetProperty("generated_at", out _) &&
-          doc.RootElement.GetProperty("source").GetString() == "Wings of the Valkyrie 2.0.2" &&
+          doc.RootElement.GetProperty("source").GetString() == "Wings of the Valkyrie 2.0.4" &&
           doc.RootElement.GetProperty("schema_version").GetInt32() == 4);
     Check("empty export declares its write interval",
           doc.RootElement.GetProperty("intervals").GetProperty("write_seconds").GetInt32() == 60);

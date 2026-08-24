@@ -3,9 +3,12 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>WingsoftheValkyrie</AssemblyName>
     <Description>Valheim Wings of the Valkyrie Mod</Description>
-    <Version>2.0.2</Version>
-    <!-- Gale test-profile deploy target for the DeployLocal step below (Linux path). -->
-    <GaleProfilePlugins>$(HOME)/.local/share/com.kesomannen.gale/valheim/profiles/The Tester/BepInEx/plugins/Wubarrk-Wings_of_the_Valkyrie</GaleProfilePlugins>
+    <Version>2.0.4</Version>
+    <!-- Gale test-profile deploy target for the DeployLocal step below (Linux path). The profile
+         has been called both "The Tester" and "Tester"; each Copy below is guarded on the folder
+         already existing, so the one that is not there is skipped instead of being created empty. -->
+    <GaleProfiles>$(HOME)/.local/share/com.kesomannen.gale/valheim/profiles</GaleProfiles>
+    <GalePackagePath>BepInEx/plugins/Wubarrk-Wings_of_the_Valkyrie</GalePackagePath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -76,6 +79,7 @@
        so the 1.9.x test loop is build-and-launch. -->
   <Target Name="DeployLocal" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)HexiumDist/WingsoftheValkyrie/plugins" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GaleProfilePlugins)" Condition="Exists('$(GaleProfilePlugins)')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GaleProfiles)/The Tester/$(GalePackagePath)" Condition="Exists('$(GaleProfiles)/The Tester/$(GalePackagePath)')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GaleProfiles)/Tester/$(GalePackagePath)" Condition="Exists('$(GaleProfiles)/Tester/$(GalePackagePath)')" />
   </Target>
 </Project>

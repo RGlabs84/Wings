@@ -168,33 +168,60 @@ namespace WingsoftheValkyrie
             return GetWingsNameFromHash(hash) != null;
         }
 
+        /// <summary>Inverse of <see cref="GetWingsNameFromHash"/>. 0 for null or any other name.</summary>
+        public static int GetHashFromWingsName(string wingsName)
+        {
+            switch (wingsName)
+            {
+                case CrudeName: return CrudeHash;
+                case TrollName: return TrollHash;
+                case LoxName: return LoxHash;
+                case DragonName: return DragonHash;
+                default: return 0;
+            }
+        }
+
+        /// <summary>
+        /// The wings a player is genuinely wearing, or null. Authoritative, and so only meaningful
+        /// for the local player: Humanoid.m_shoulderItem is owner-only and null for everyone else.
+        ///
+        /// It deliberately does NOT fall back to the model's shoulder hash. **Appearance is not
+        /// evidence.** AzuExtendedPlayerInventory's vanity slots prefix VisEquipment.SetShoulderEquipped
+        /// and overwrite the hash with whatever the player chose to *look* like, and that hash is
+        /// what lands in m_currentShoulderItemHash -- so up to 2.0.2 a Deer Cape transformed into
+        /// wings granted real flight, wings the wearer did not have to own, craft or even carry.
+        ///
+        /// Reading only the equipped item settles both directions at once: a costume never flies,
+        /// and real wings worn under a costume always do.
+        /// </summary>
         public static string GetEquippedWingsName(Player player)
         {
             if (player == null) return null;
 
-            // Local player: the real ItemData is authoritative and available immediately.
-            if (ShoulderItemRef != null)
-            {
-                var shoulderItem = ShoulderItemRef(player);
-                if (shoulderItem != null && shoulderItem.m_dropPrefab != null)
-                {
-                    string name = GetWingsNameFromHash(shoulderItem.m_dropPrefab.name.GetStableHashCode());
-                    if (name != null) return name;
-                }
-            }
+            // A missing field ref means the game moved m_shoulderItem out from under us. Fall back
+            // to the model rather than grounding every player at once: a stale reflection handle
+            // must not cost people flight they crafted, and of the two ways to be wrong, letting a
+            // costume fly is much the smaller.
+            if (ShoulderItemRef == null) return GetVisualWingsName(player);
 
-            // Remote players: Humanoid.m_shoulderItem and VisEquipment.m_shoulderItem are both
-            // owner-only. The networked value is resolved into m_currentShoulderItemHash.
-            if (CurrentShoulderHashRef != null)
-            {
-                var visEq = player.GetComponent<VisEquipment>();
-                if (visEq != null)
-                {
-                    return GetWingsNameFromHash(CurrentShoulderHashRef(visEq));
-                }
-            }
+            var shoulderItem = ShoulderItemRef(player);
+            if (shoulderItem == null || shoulderItem.m_dropPrefab == null) return null;
 
-            return null;
+            return GetWingsNameFromHash(shoulderItem.m_dropPrefab.name.GetStableHashCode());
+        }
+
+        /// <summary>
+        /// What a player's model is wearing on its back, or null. **Cosmetic only.** This is the
+        /// post-vanity hash, so it can name wings nobody equipped and stay silent about wings
+        /// somebody did -- never gate flight on it. It is the last resort for drawing a remote
+        /// player whose owner is on a build that does not publish its tier.
+        /// </summary>
+        public static string GetVisualWingsName(Player player)
+        {
+            if (player == null || CurrentShoulderHashRef == null) return null;
+
+            var visEq = player.GetComponent<VisEquipment>();
+            return visEq != null ? GetWingsNameFromHash(CurrentShoulderHashRef(visEq)) : null;
         }
 
         public static bool IsWingsEquipped(Player player)
