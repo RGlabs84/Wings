@@ -49,7 +49,7 @@ namespace WingsoftheValkyrie
 
                 if (resourceName == null)
                 {
-                    Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Embedded icon '{fileName}' not found; keeping the fallback icon.");
+                    Log.LogWarning($"Embedded icon '{fileName}' not found; keeping the fallback icon.");
                 }
                 else
                 {
@@ -74,13 +74,13 @@ namespace WingsoftheValkyrie
                     }
                     else
                     {
-                        Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Embedded icon '{fileName}' is not a decodable PNG.");
+                        Log.LogWarning($"Embedded icon '{fileName}' is not a decodable PNG.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Failed loading embedded icon '{fileName}': {ex.Message}");
+                Log.LogWarning($"Failed loading embedded icon '{fileName}': {ex.Message}");
             }
 
             Cache[fileName] = sprite;

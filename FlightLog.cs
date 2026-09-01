@@ -105,7 +105,7 @@ namespace WingsoftheValkyrie
             {
                 // A corrupt saga is worth losing; a corrupt saga that stops you flying is not.
                 _saga = new FlightSaga();
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not read the flight logbook for {owner}, starting a fresh one. Reason: {ex.Message}");
+                Log.LogWarning($"Could not read the flight logbook for {owner}, starting a fresh one. Reason: {ex.Message}");
             }
         }
 
@@ -136,7 +136,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not store the flight logbook on your character. Reason: {ex.Message}");
+                Log.LogWarning($"Could not store the flight logbook on your character. Reason: {ex.Message}");
             }
 
             FlightReport.ReportToServer(player, _saga, force);

@@ -82,7 +82,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not register the flight report RPC; flight stats will not reach the server. Reason: {ex.Message}");
+                Log.LogWarning($"Could not register the flight report RPC; flight stats will not reach the server. Reason: {ex.Message}");
             }
         }
 
@@ -137,7 +137,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not send your flight stats to the server. Reason: {ex.Message}");
+                Log.LogWarning($"Could not send your flight stats to the server. Reason: {ex.Message}");
             }
         }
 
@@ -171,7 +171,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not read a flight report. Reason: {ex.Message}");
+                Log.LogWarning($"Could not read a flight report. Reason: {ex.Message}");
             }
         }
 
@@ -238,7 +238,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not read the flight registry; it will rebuild as players fly. Reason: {ex.Message}");
+                Log.LogWarning($"Could not read the flight registry; it will rebuild as players fly. Reason: {ex.Message}");
             }
         }
 
@@ -291,7 +291,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not write the flight export to '{directory}'. Reason: {ex.Message}");
+                Log.LogWarning($"Could not write the flight export to '{directory}'. Reason: {ex.Message}");
                 return null;
             }
         }
@@ -332,14 +332,14 @@ namespace WingsoftheValkyrie
                     if (written.Contains(name)) continue;
 
                     File.Delete(found);
-                    Jotunn.Logger.LogInfo($"[Wings of the Valkyrie] Removed a flight export this version no longer writes, so the reader stops ranking it: {name}");
+                    Log.LogInfo($"Removed a flight export this version no longer writes, so the reader stops ranking it: {name}");
                 }
             }
             catch (Exception ex)
             {
                 // A file we could not delete is a stale ranking, not a broken export: say so and
                 // carry on writing the ones that did work.
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Could not tidy old flight exports; an out-of-date file may still be read. Reason: {ex.Message}");
+                Log.LogWarning($"Could not tidy old flight exports; an out-of-date file may still be read. Reason: {ex.Message}");
             }
         }
 

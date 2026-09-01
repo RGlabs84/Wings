@@ -31,7 +31,9 @@ namespace WingsoftheValkyrie
         //   1 = the v2 layout: Bronze Age recipes, raised station levels, tuned XP rates.
         //   2 = the 2.0.1 "earn the sky" balance: per-tier flight stats rebased so the listed
         //       numbers are what MASTERY buys, with the skill bonus curves widened to match.
-        public const int CurrentConfigVersion = 2;
+        //   3 = the 2.1.0 upgrade layout: wings became upgradable, which turned MinStationLevel
+        //       into a gate on the whole upgrade path rather than just the craft.
+        public const int CurrentConfigVersion = 3;
 
         public sealed class Rebase
         {
@@ -93,6 +95,17 @@ namespace WingsoftheValkyrie
                     new Rebase { Section = "6. Valkyrie Flight Skill", Key = "GlideSinkReductionAtMax", OldDefaults = new[] { "0.5" } },
                     new Rebase { Section = "6. Valkyrie Flight Skill", Key = "GlideSpeedBonusAtMax", OldDefaults = new[] { "0.15" } },
                 }
+            },
+            // 2.1.0 made the wings upgradable, and upgrading to quality q demands station level
+            // MinStationLevel + (q - 1). A workbench tops out at level 5, so the Crude and Troll
+            // floors of 3 put quality 4 permanently out of reach -- an upgrade path nobody could
+            // finish. Both drop to 2 (2 + 3 = 5, exactly reachable). The forge reaches 7 and the
+            // Galdr table 4, so Lox at 3 and Dragon at 1 are already fine and are left alone.
+            { 3, new[]
+                {
+                    new Rebase { Section = "2. Crude Wings", Key = "MinStationLevel", OldDefaults = new[] { "3" } },
+                    new Rebase { Section = "3. Troll Wings", Key = "MinStationLevel", OldDefaults = new[] { "3" } },
+                }
             }
         };
 
@@ -126,7 +139,7 @@ namespace WingsoftheValkyrie
                 if (_fileVersion >= CurrentConfigVersion) return;
 
                 Backup(path, _fileVersion);
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Migrating {Path.GetFileName(path)} from config version {_fileVersion} to {CurrentConfigVersion}. Values you changed are kept; values still at their old defaults move to the new ones. The previous file is backed up beside it.");
+                Log.LogWarning($"Migrating {Path.GetFileName(path)} from config version {_fileVersion} to {CurrentConfigVersion}. Values you changed are kept; values still at their old defaults move to the new ones. The previous file is backed up beside it.");
 
                 PlanRebases();
             }
@@ -134,7 +147,7 @@ namespace WingsoftheValkyrie
             {
                 // A failed migration must never stop the mod loading - worst case the config
                 // binds exactly as it always did, which is the old behaviour.
-                Jotunn.Logger.LogError($"[Wings of the Valkyrie] Config migration could not start, settings will be read as-is. Reason: {ex}");
+                Log.LogError($"Config migration could not start, settings will be read as-is. Reason: {ex}");
             }
         }
 
@@ -157,11 +170,11 @@ namespace WingsoftheValkyrie
                     if (wasOldDefault)
                     {
                         Pending.Add(new ConfigDefinition(rebase.Section, rebase.Key));
-                        Jotunn.Logger.LogInfo($"[Wings of the Valkyrie] [{rebase.Section}] {rebase.Key} was still the old default; moving it to the new default.");
+                        Log.LogInfo($"[{rebase.Section}] {rebase.Key} was still the old default; moving it to the new default.");
                     }
                     else
                     {
-                        Jotunn.Logger.LogInfo($"[Wings of the Valkyrie] [{rebase.Section}] {rebase.Key} was customised ('{stored}'); keeping your value.");
+                        Log.LogInfo($"[{rebase.Section}] {rebase.Key} was customised ('{stored}'); keeping your value.");
                     }
                 }
             }
@@ -189,7 +202,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogError($"[Wings of the Valkyrie] Config migration could not finish - check the backup beside your config file. Reason: {ex}");
+                Log.LogError($"Config migration could not finish - check the backup beside your config file. Reason: {ex}");
             }
             finally
             {
@@ -208,7 +221,7 @@ namespace WingsoftheValkyrie
             }
             catch (Exception ex)
             {
-                Jotunn.Logger.LogError($"[Wings of the Valkyrie] Could not back up the config before migrating ({ex.Message}). Migrating anyway.");
+                Log.LogError($"Could not back up the config before migrating ({ex.Message}). Migrating anyway.");
             }
         }
 

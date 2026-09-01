@@ -18,8 +18,8 @@ namespace WingsoftheValkyrie
             }
             catch (System.Exception ex)
             {
-                Jotunn.Logger.LogWarning(
-                    $"[Wings of the Valkyrie] Could not bind {typeof(T).Name}.{fieldName} ({ex.Message}). " +
+                Log.LogWarning(
+                    $"Could not bind {typeof(T).Name}.{fieldName} ({ex.Message}). " +
                     "The feature depending on it will be skipped.");
                 return null;
             }

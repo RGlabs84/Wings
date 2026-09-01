@@ -59,7 +59,7 @@ namespace WingsoftheValkyrie
             }
             catch (System.Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Error in UpdatePostfix for {__instance?.GetPlayerName()}: {ex.Message}");
+                Log.LogWarning($"Error in UpdatePostfix for {__instance?.GetPlayerName()}: {ex.Message}");
             }
         }
 
@@ -89,7 +89,9 @@ namespace WingsoftheValkyrie
 
             if (ValkyrieInput.JumpPressed(player))
             {
-                WingStats stats = ModConfig.GetStats(wingsName);
+                // Quality is the upgrade level of the wings actually on the player's back.
+                // Upgrading buys a little more lift and a little less stamina per flap.
+                WingStats stats = ModConfig.GetStats(wingsName, WingsItem.GetEquippedWingsQuality(player));
 
                 // Powered flight is earned, not bought. Below the tier's requirement the wings
                 // still open and still glide -- and gliding is what pays for the skill -- so a
@@ -245,7 +247,9 @@ namespace WingsoftheValkyrie
                     Rigidbody rb = __instance.GetComponent<Rigidbody>();
                     if (rb != null)
                     {
-                        WingStats stats = ModConfig.GetStats(WingsItem.GetEquippedWingsName(__instance));
+                        ItemDrop.ItemData wings = WingsItem.GetEquippedWings(__instance);
+                        string wingsName = wings != null ? WingsItem.GetWingsNameFromHash(wings.m_dropPrefab.name.GetStableHashCode()) : null;
+                        WingStats stats = ModConfig.GetStats(wingsName, wings != null ? wings.m_quality : 1);
                         float skillFactor = FlyingSkill.Factor(__instance);
                         float glideSpeed = stats.GlideSpeed * (1f + ModConfig.SkillGlideSpeedBonus.Value * skillFactor);
                         float flapForce = stats.FlapForce * (1f + ModConfig.SkillFlapPowerBonus.Value * skillFactor);
@@ -312,7 +316,7 @@ namespace WingsoftheValkyrie
             }
             catch (System.Exception ex)
             {
-                Jotunn.Logger.LogWarning($"[Wings of the Valkyrie] Error in FixedUpdatePostfix for {__instance?.GetPlayerName()}: {ex.Message}");
+                Log.LogWarning($"Error in FixedUpdatePostfix for {__instance?.GetPlayerName()}: {ex.Message}");
             }
         }
     }

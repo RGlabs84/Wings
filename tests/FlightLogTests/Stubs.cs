@@ -17,12 +17,13 @@ namespace UnityEngine
 }
 
 namespace BepInEx { public static class Paths { public static string ConfigPath = "/tmp/wotv-test-config"; } }
-namespace Jotunn
+namespace WingsoftheValkyrie
 {
-    public static class Logger
+    public static class Log
     {
         public static void LogWarning(object m) => System.Console.WriteLine("[warn] " + m);
         public static void LogInfo(object m) => System.Console.WriteLine("[info] " + m);
+        public static void LogError(object m) => System.Console.WriteLine("[error] " + m);
     }
 }
 
@@ -97,7 +98,7 @@ namespace WingsoftheValkyrie
     public static class WingsoftheValkyriePlugin
     {
         public const string PluginName = "Wings of the Valkyrie";
-        public const string PluginVersion = "2.0.4";
+        public const string PluginVersion = "2.1.0";
     }
 }
 

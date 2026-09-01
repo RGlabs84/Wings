@@ -16,7 +16,7 @@ namespace WingsoftheValkyrie.VFX
                 return;
 
             _initialized = true;
-            Jotunn.Logger.LogInfo("🜁 VFX‑Forge: Seeking glowing, additive, unlit shaders worthy of Njord.");
+            Log.LogInfo("🜁 VFX‑Forge: Seeking glowing, additive, unlit shaders worthy of Njord.");
         }
 
         // Compute a cheap 64-bit composite cache key from shader, texture and color.
@@ -77,7 +77,7 @@ namespace WingsoftheValkyrie.VFX
 
             if (best == null)
             {
-                Jotunn.Logger.LogError("🜁 VFX‑Forge: No glowing shader found. The runes refuse to shine.");
+                Log.LogError("🜁 VFX‑Forge: No glowing shader found. The runes refuse to shine.");
                 return null;
             }
 
@@ -119,7 +119,7 @@ namespace WingsoftheValkyrie.VFX
             // ── 5. Cache and return ───────────────────────────────────────────
             _materialCache[key] = m;
 
-            Jotunn.Logger.LogInfo($"🜁 VFX‑Forge: Forged glowing additive rune material from '{best.name}'.");
+            Log.LogInfo($"🜁 VFX‑Forge: Forged glowing additive rune material from '{best.name}'.");
             return m;
         }
 

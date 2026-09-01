@@ -2,17 +2,6 @@
 // be run against real .cfg files off-game.
 using System.Collections.Generic;
 
-namespace Jotunn
-{
-    public static class Logger
-    {
-        public static List<string> Lines = new List<string>();
-        public static void LogInfo(object m) { Lines.Add("INFO " + m); }
-        public static void LogWarning(object m) { Lines.Add("WARN " + m); }
-        public static void LogError(object m) { Lines.Add("ERROR " + m); }
-    }
-}
-
 namespace BepInEx.Configuration
 {
     public class ConfigDefinition
@@ -50,6 +39,14 @@ namespace BepInEx.Configuration
 
 namespace WingsoftheValkyrie
 {
+    public static class Log
+    {
+        public static List<string> Lines = new List<string>();
+        public static void LogInfo(object m) { Lines.Add("INFO " + m); }
+        public static void LogWarning(object m) { Lines.Add("WARN " + m); }
+        public static void LogError(object m) { Lines.Add("ERROR " + m); }
+    }
+
     public static class ModConfig
     {
         public const string MetaSection = "0. Meta";

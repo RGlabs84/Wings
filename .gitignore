@@ -11,3 +11,6 @@ libs/
 
 # Unpacking a package in place leaves a duplicate of the payload beside its own zip.
 HexiumDist/WingsoftheValkyrie-v*/
+
+# The staged Gale package folder is a duplicate of the payload in plugins/ and the zip.
+HexiumDist/gale-package/

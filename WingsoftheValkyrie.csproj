@@ -3,14 +3,25 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>WingsoftheValkyrie</AssemblyName>
     <Description>Valheim Wings of the Valkyrie Mod</Description>
-    <Version>2.0.4</Version>
-    <!-- Gale test-profile deploy target for the DeployLocal step below (Linux path). The profile
-         has been called both "The Tester" and "Tester"; each Copy below is guarded on the folder
-         already existing, so the one that is not there is skipped instead of being created empty. -->
+    <Version>2.1.0</Version>
+    <!-- Gale test-profile deploy, OFF by default. Build with -p:DeployToGale=true to opt in.
+         It is off because the test rig has ONE deploy owner at a time, and client and server must
+         land together: a client carrying this mod cannot even connect to a server without it
+         (ServerSync ModRequired), and a DLL rewritten under a launching client has already
+         hard-crashed Valheim here with a Mono SIGABRT. An automatic copy on every Release build
+         is exactly the second writer that rule exists to prevent.
+         NEVER point this at "Wonderland Client" or "Wonderland ADMINing": those are live server
+         profiles, and this mod's builds are not always network-compatible with what they run. -->
+    <DeployToGale Condition="'$(DeployToGale)' == ''">false</DeployToGale>
     <GaleProfiles>$(HOME)/.local/share/com.kesomannen.gale/valheim/profiles</GaleProfiles>
+    <GaleTestProfile>Test-icles</GaleTestProfile>
     <GalePackagePath>BepInEx/plugins/Wubarrk-Wings_of_the_Valkyrie</GalePackagePath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <!-- ServerSync.cs is shared source written with nullable reference annotations; this project
+         does not opt into them, so the annotations are inert and their warning is noise. -->
+    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CS8632</NoWarn>
   </PropertyGroup>
 
   <!-- ALL reference assemblies come from the SHARED c:\WubarrkCODING\libs-Tools folder, never from a per-project
@@ -21,9 +32,6 @@
     </Reference>
     <Reference Include="0Harmony">
       <HintPath>..\libs-Tools\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Jotunn">
-      <HintPath>..\libs-Tools\Jotunn.dll</HintPath>
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>..\libs-Tools\assembly_valheim.dll</HintPath>
@@ -53,6 +61,16 @@
       <HintPath>..\libs-Tools\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- ServerSync's version-mismatch panel writes into the connect dialog's TMP label. Neither
+         is copied to output; the game supplies the real ones. -->
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\libs-Tools\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\libs-Tools\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <!-- Facade only: ImageConversionModule is compiled against netstandard 2.1, which net48
          alone cannot see. Never copied to output; the game supplies the real one. -->
     <Reference Include="netstandard">
@@ -70,6 +88,12 @@
     <EmbeddedResource Remove="tests/**" />
   </ItemGroup>
 
+  <!-- Config sync + the client/server version handshake, in place of Jotunn's config manager
+       and its [NetworkCompatibility] attribute. Compiled from the shared copy, never vendored. -->
+  <ItemGroup>
+    <Compile Include="..\libs-Tools\ServerSync.cs" />
+  </ItemGroup>
+
   <!-- Icon art ships inside the DLL so the mod stays a single-file plugin. -->
   <ItemGroup>
     <EmbeddedResource Include="Resources/Icons/*.png" />
@@ -78,8 +102,28 @@
   <!-- Release builds land directly in the Hexium staging folder and the Gale test profile,
        so the 1.9.x test loop is build-and-launch. -->
   <Target Name="DeployLocal" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <GaleTestTarget>$(GaleProfiles)/$(GaleTestProfile)/$(GalePackagePath)</GaleTestTarget>
+      <GalePackageStage>$(ProjectDir)HexiumDist/gale-package/Wubarrk-Wings_of_the_Valkyrie</GalePackageStage>
+    </PropertyGroup>
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)HexiumDist/WingsoftheValkyrie/plugins" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GaleProfiles)/The Tester/$(GalePackagePath)" Condition="Exists('$(GaleProfiles)/The Tester/$(GalePackagePath)')" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GaleProfiles)/Tester/$(GalePackagePath)" Condition="Exists('$(GaleProfiles)/Tester/$(GalePackagePath)')" />
+
+    <!-- The complete Gale/Hexium package folder, staged in the repo rather than pushed into a
+         profile. This is what a deploy should copy wholesale: every other Wubarrk package in the
+         test profile carries manifest/icon/README/CHANGELOG/LICENSE beside its DLL, and a bare
+         DLL leaves Gale with nothing to identify the package by. -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GalePackageStage)" />
+    <Copy SourceFiles="$(ProjectDir)HexiumDist/manifest.json;$(ProjectDir)HexiumDist/icon.png;$(ProjectDir)HexiumDist/README.md;$(ProjectDir)HexiumDist/CHANGELOG.md;$(ProjectDir)LICENSE.md"
+          DestinationFolder="$(GalePackageStage)" />
+    <Message Importance="high" Text="Staged Gale package at $(GalePackageStage)" />
+
+    <!-- Only into the profile itself, never creating the profile: a typo in GaleTestProfile should
+         fail loudly here rather than quietly seed a plugins tree Gale knows nothing about. -->
+    <Warning Text="Gale profile '$(GaleTestProfile)' not found under $(GaleProfiles) - skipping the test deploy."
+             Condition="'$(DeployToGale)' == 'true' AND !Exists('$(GaleProfiles)/$(GaleTestProfile)')" />
+    <MakeDir Directories="$(GaleTestTarget)" Condition="'$(DeployToGale)' == 'true' AND Exists('$(GaleProfiles)/$(GaleTestProfile)')" />
+    <Copy SourceFiles="$(GalePackageStage)/WingsoftheValkyrie.dll;$(GalePackageStage)/manifest.json;$(GalePackageStage)/icon.png;$(GalePackageStage)/README.md;$(GalePackageStage)/CHANGELOG.md;$(GalePackageStage)/LICENSE.md"
+          DestinationFolder="$(GaleTestTarget)" Condition="'$(DeployToGale)' == 'true' AND Exists('$(GaleProfiles)/$(GaleTestProfile)')" />
+    <Message Importance="high" Text="Deployed to $(GaleTestTarget)" Condition="'$(DeployToGale)' == 'true' AND Exists('$(GaleProfiles)/$(GaleTestProfile)')" />
   </Target>
 </Project>
