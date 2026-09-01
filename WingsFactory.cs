@@ -38,6 +38,10 @@ namespace WingsoftheValkyrie
         private static readonly Dictionary<string, GameObject> Prefabs = new Dictionary<string, GameObject>();
         private static readonly Dictionary<string, Recipe> Recipes = new Dictionary<string, Recipe>();
 
+        // Last logged station binding per tier, so the recipe pass can be re-run as often as it
+        // likes without repeating itself. See LogStation.
+        private static readonly Dictionary<string, string> StationState = new Dictionary<string, string>();
+
         // ObjectDB.UpdateRegisters is private and has no public equivalent; it is what rebuilds
         // m_itemByHash, without which ItemDrop.Awake cannot resolve m_dropPrefab and every one of
         // our items saves as an empty string and is destroyed on the next load.
@@ -245,6 +249,34 @@ namespace WingsoftheValkyrie
                     }
 
                     ModConfig.TierConfig cfg = tier.Config;
+                    string stationName = cfg.CraftingStation.Value;
+                    CraftingStation station = null;
+
+                    if (!string.IsNullOrEmpty(stationName))
+                    {
+                        // A recipe whose m_craftingStation is null is craftable from the inventory
+                        // with no bench at all, so the station has to resolve BEFORE the recipe is
+                        // published. On a dedicated server ObjectDB.Awake fires before
+                        // ZNetScene.Awake, and the station lives in the scene -- so on that first
+                        // pass there is simply nothing to look it up in. Skip the tier and let the
+                        // ZNetScene.Awake postfix publish it; every pass here is idempotent.
+                        if (ZNetScene.instance == null) continue;
+
+                        station = FindStation(stationName);
+                        if (station == null)
+                        {
+                            // The scene is up and the name still will not resolve: a typo in the
+                            // config, or a station belonging to a mod that is not installed.
+                            // Leaving the recipe in would hand out free wings, so it comes back
+                            // out until the name is fixed -- which a config edit does live.
+                            LogStation(tier, "missing:" + stationName,
+                                () => Log.LogError($"Crafting station '{stationName}' does not exist, so {tier.DisplayName} cannot be crafted. Fix CraftingStation in the config (or clear it to make them craftable with no station)."));
+
+                            recipe.m_enabled = false;
+                            db.m_recipes.Remove(recipe);
+                            continue;
+                        }
+                    }
 
                     // Must be the CLONE's ItemDrop: DoCrafting crafts by
                     // m_craftRecipe.m_item.gameObject.name, so the donor here would craft a cape.
@@ -252,15 +284,20 @@ namespace WingsoftheValkyrie
                     recipe.m_amount = 1;
                     recipe.m_enabled = true;
                     recipe.m_minStationLevel = Mathf.Max(1, cfg.MinStationLevel.Value);
-                    recipe.m_craftingStation = FindStation(cfg.CraftingStation.Value);
+                    recipe.m_craftingStation = station;
 
                     // The station that may perform upgrades and repairs. Same station: an upgrade
                     // path that needed a different bench would be a surprise nobody asked for.
-                    recipe.m_repairStation = recipe.m_craftingStation;
+                    recipe.m_repairStation = station;
 
                     recipe.m_resources = BuildRequirements(db, tier, cfg);
 
                     if (!db.m_recipes.Contains(recipe)) db.m_recipes.Add(recipe);
+
+                    LogStation(tier, $"ok:{stationName}:{recipe.m_minStationLevel}",
+                        () => Log.LogInfo(string.IsNullOrEmpty(stationName)
+                            ? $"{tier.PrefabName} is craftable with no station."
+                            : $"{tier.PrefabName} bound to station '{stationName}' at level {recipe.m_minStationLevel}."));
                 }
                 catch (Exception ex)
                 {
@@ -269,18 +306,31 @@ namespace WingsoftheValkyrie
             }
         }
 
+        /// <summary>
+        /// Returns null both when the name does not resolve and when it resolves to something
+        /// that is not a bench. Says nothing either way: the caller knows whether the scene is
+        /// up yet, and that is the difference between "too early" and "wrong".
+        /// </summary>
         private static CraftingStation FindStation(string stationPrefabName)
         {
             if (string.IsNullOrEmpty(stationPrefabName)) return null;
+            if (ZNetScene.instance == null) return null;
 
-            GameObject prefab = ZNetScene.instance != null ? ZNetScene.instance.GetPrefab(stationPrefabName) : null;
-            if (prefab == null)
-            {
-                Log.LogWarning($"Crafting station '{stationPrefabName}' was not found; those wings will be craftable without a station until it is.");
-                return null;
-            }
+            GameObject prefab = ZNetScene.instance.GetPrefab(stationPrefabName);
+            return prefab != null ? prefab.GetComponent<CraftingStation>() : null;
+        }
 
-            return prefab.GetComponent<CraftingStation>();
+        /// <summary>
+        /// EnsureRecipes runs from three patch points and again on every config change, so a line
+        /// logged unconditionally would repeat for as long as the game is open. This logs only
+        /// when a tier's station binding actually changes -- which is exactly when it is news.
+        /// </summary>
+        private static void LogStation(WingsTier tier, string state, Action write)
+        {
+            if (StationState.TryGetValue(tier.PrefabName, out string previous) && previous == state) return;
+
+            StationState[tier.PrefabName] = state;
+            write();
         }
 
         // ---- stats -------------------------------------------------------------------------

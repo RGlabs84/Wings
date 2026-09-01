@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1
+**The bench requirement could go missing for a moment on startup.** A patch release; nothing about the wings themselves changes.
+
+- **Recipes are no longer published before their crafting station is found.** On a dedicated server `ObjectDB` wakes before `ZNetScene`, and the workbench, forge and Galdr table live in the scene -- so on that first pass there was nothing to look them up in. The recipes went in with no station attached, which in Valheim does not mean "no bench nearby will do", it means **craftable from the inventory screen with no bench at all**. A second pass a fraction of a second later put the station back, so the window was small and probably never open long enough for anyone to reach it, but nothing in the log said so either way and nothing in the code guaranteed it. Each tier now waits for the scene and is published once, correctly, the first time.
+- **A crafting station that does not exist now disables that tier instead of making it free.** If `CraftingStation` is set to a prefab the game does not have -- a typo, or a bench belonging to a mod that is no longer installed -- those wings simply cannot be crafted, and the log says which name failed. Handing out station-free Dragon wings was the wrong way to fail. Fixing the name in the config brings the recipe straight back, with no restart.
+- **The log now says where each tier landed.** Four lines at startup -- `WingsOf_Dragon bound to station 'piece_magetable' at level 1.` -- reported once, and again only if a config change actually moves one. The four warnings this replaces were alarming and told you nothing about the outcome.
+
 ## 2.1.0
 **Our own wings.** Every tier was a vanilla cape underneath, wearing the mod's icon and quietly carrying the cape's stats along with it. They are the mod's own items now -- with their own armour, their own resistances, and an **upgrade path** -- and the mod no longer needs Jotunn to make them. **Update the server and every client together**; a 2.1.0 build will not talk to a 2.0.x one. Your wings, your Valkyrie Flight levels and your logbook all survive the move: the item names and the skill's identity are unchanged, so nothing in your inventory or your save is touched.
 

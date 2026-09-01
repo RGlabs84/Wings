@@ -8,7 +8,7 @@ namespace WingsoftheValkyrie
     {
         public const string PluginGUID = "wubarrk.wingsofthevalkyrie";
         public const string PluginName = "Wings of the Valkyrie";
-        public const string PluginVersion = "2.1.0";
+        public const string PluginVersion = "2.1.1";
 
         // ServerSync's minimum-version pin, deliberately NOT PluginVersion. Pinning the two
         // together means every build disconnects every player until they update, which is right

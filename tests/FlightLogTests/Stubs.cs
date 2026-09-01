@@ -98,7 +98,7 @@ namespace WingsoftheValkyrie
     public static class WingsoftheValkyriePlugin
     {
         public const string PluginName = "Wings of the Valkyrie";
-        public const string PluginVersion = "2.1.0";
+        public const string PluginVersion = "2.1.1";
     }
 }
 
