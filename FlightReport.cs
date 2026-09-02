@@ -206,6 +206,10 @@ namespace WingsoftheValkyrie
 
         private static string RegistryPath() => Path.Combine(ExportDirectory(), RegistryFileName);
 
+        /// <summary>Forces the registry read, which is also what builds or loads the one-time
+        /// skill restore snapshot. Safe to call from anywhere; it does its work once.</summary>
+        internal static void EnsureSnapshot() => EnsureRegistryLoaded();
+
         private static void EnsureRegistryLoaded()
         {
             if (_registryLoaded) return;
@@ -239,6 +243,22 @@ namespace WingsoftheValkyrie
             catch (Exception ex)
             {
                 Log.LogWarning($"Could not read the flight registry; it will rebuild as players fly. Reason: {ex.Message}");
+            }
+
+            // The moment the rows come off disk and before a single client report can overwrite
+            // one. Any later and a pilot who logs straight in would have replaced their own row
+            // with the reset value before it was ever captured.
+            FlyingSkillRestore.CaptureSnapshot(Rows.Count, VisitRows);
+        }
+
+        /// <summary>Hands each known pilot's id, name and last-recorded skill level to a visitor.
+        /// Used to seed the one-time skill restore; deliberately not a live view of Rows.</summary>
+        private static void VisitRows(Action<long, string, float> visit)
+        {
+            foreach (Row row in Rows.Values)
+            {
+                if (row == null || row.Saga == null) continue;
+                visit(row.PlayerId, row.Name, row.Saga.SkillLevel);
             }
         }
 

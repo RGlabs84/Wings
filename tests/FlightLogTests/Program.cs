@@ -9,6 +9,9 @@ int failures = 0;
 void NewSession()
 {
     ZRoutedRpc.instance = new ZRoutedRpc();
+    // The real FlyingSkillRestore.Register clears its snapshot state per network session, so
+    // the stub has to as well or every session after the first would look already-captured.
+    FlyingSkillRestore.Reset();
     FlightReport.Register();
 }
 
@@ -186,7 +189,7 @@ try
           doc.RootElement.TryGetProperty("players", out var pl) && pl.EnumerateObject().Count() == 0);
     Check("empty export still carries generated_at / source / schema_version",
           doc.RootElement.TryGetProperty("generated_at", out _) &&
-          doc.RootElement.GetProperty("source").GetString() == "Wings of the Valkyrie 2.1.1" &&
+          doc.RootElement.GetProperty("source").GetString() == "Wings of the Valkyrie 2.1.5" &&
           doc.RootElement.GetProperty("schema_version").GetInt32() == 4);
     Check("empty export declares its write interval",
           doc.RootElement.GetProperty("intervals").GetProperty("write_seconds").GetInt32() == 60);
@@ -580,6 +583,16 @@ try
                        p.Value.GetProperty("flight_time_seconds").GetDouble() > 1000));
 }
 catch (Exception ex) { Check("registry survives a restart", false, ex.Message); }
+
+// The skill-restore snapshot must be taken from the rows as they come off DISK, at the moment
+// the registry loads -- not from whatever the session ends up holding. If it were taken any
+// later, a pilot who logs straight in would have already replaced their own row with the reset
+// level, and the one number worth restoring would be the one number lost.
+Check("the restore snapshot is captured exactly once per session",
+      FlyingSkillRestore.Captures == 1, "captures=" + FlyingSkillRestore.Captures);
+Check("and it sees the levels the registry file held, not an empty session",
+      FlyingSkillRestore.Seen.Count == 2 && FlyingSkillRestore.Seen.Values.Any(v => v > 0f),
+      "seen=" + FlyingSkillRestore.Seen.Count);
 
 Check("no .tmp file is left behind", !Directory.GetFiles(OUT).Any(f => f.EndsWith(".tmp")));
 Check("the export is named the way the sweep expects",

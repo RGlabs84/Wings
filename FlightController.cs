@@ -81,7 +81,15 @@ namespace WingsoftheValkyrie
             // first clause has already matched. Standing on a deck IS ground contact -- the
             // deck's rigidbody becomes m_lastGroundBody -- so IsOnGround() covers the still case
             // on its own. The case it cannot cover is handled at the auto-deploy test below.
-            if (player.IsOnGround() || player.IsSwimming() || player.InWater() || player.GetStandingOnShip() != null)
+            //
+            // IsAttachedToShip() is the one that covers TAKING THE RUDDER, and none of the
+            // others can. An attached helmsman is not on the ground (the attach lifts them off
+            // it), not swimming, not in water, and not "standing on" anything -- so every clause
+            // above passed and Jump opened the wings while the player was steering. ShipControlls
+            // calls AttachStart with onShip: true, which is exactly what this reads; the same
+            // flag covers ship chairs, whose Chair passes m_inShip.
+            if (player.IsOnGround() || player.IsSwimming() || player.InWater()
+                || player.GetStandingOnShip() != null || player.IsAttachedToShip())
             {
                 vfx.IsGlidingLocal = false;
                 return;
@@ -209,6 +217,7 @@ namespace WingsoftheValkyrie
                 // so a 1.1.x mismatch is possible). Fall back to guessing from vertical motion.
                 gliding = !player.IsOnGround() && !player.IsSwimming() && !player.InWater()
                           && player.GetStandingOnShip() == null
+                          && !player.IsAttachedToShip()     // at the rudder, not in the air
                           && player.InNumShipVolumes == 0   // wave bob, same blind spot as above
                           && Mathf.Abs(player.GetVelocity().y) > 2f;
                 vfx.IsGlidingLocal = gliding;
@@ -242,7 +251,9 @@ namespace WingsoftheValkyrie
                 var vfx = __instance.GetComponent<WingsoftheValkyrie.VFX.RuneWingVFX>();
                 if (vfx == null) return;
 
-                if (vfx.IsGlidingLocal && !__instance.IsOnGround() && !__instance.IsSwimming() && !__instance.InWater() && __instance.GetStandingOnShip() == null)
+                if (vfx.IsGlidingLocal && !__instance.IsOnGround() && !__instance.IsSwimming()
+                    && !__instance.InWater() && __instance.GetStandingOnShip() == null
+                    && !__instance.IsAttachedToShip())
                 {
                     Rigidbody rb = __instance.GetComponent<Rigidbody>();
                     if (rb != null)

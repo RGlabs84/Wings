@@ -7,6 +7,8 @@ Four craftable tiers of glowing runic wings await — and with **2.0.0**, flight
 
 **2.1.0 makes the wings themselves worth keeping.** They are no longer cape clones wearing a new icon — they are the mod's own items, with their own armour, their own resistances and their own **upgrade path**, and they no longer need Jotunn to exist.
 
+**2.1.4 gives the skill its memory back.** From 2.1.0 to 2.1.2 the game quietly discarded your Valkyrie Flight level every time it loaded your character. It keeps it again — and if you lost one along the way, there is now a console command to put it back. **Update the server and every client together**: a 2.1.4 server will not let those three builds connect, because a client that is still deleting its own player's levels is not something a server can protect anyone from.
+
 ---
 
 ## ⚠️ Upgrading
@@ -21,7 +23,15 @@ Four craftable tiers of glowing runic wings await — and with **2.0.0**, flight
 >
 > **Coming from 2.0.3?** The boat fix is decided entirely on your own machine, so updating your game is enough — a 2.0.4 client behaves itself on a 2.0.2 or 2.0.3 server, with nothing to change at the server end. Shipmates still on an older build will keep opening their wings on the swell until they update too.
 >
-> **Coming from 2.0.4?** Update the server and every client together — 2.1.0 will not talk to an older build. **Jotunn is no longer required**; you can remove it if nothing else on your list wants it. Your wings, your Valkyrie Flight levels and your logbook all survive: the items keep their names and the skill keeps its identity, so nothing in your inventory or your save is touched. Two config defaults move on their own — the Crude and Troll workbench requirement drops from level 3 to level 2, because upgrading needs a *higher* station than crafting and a workbench stops at level 5. If your admin had set those by hand, their values are kept as always.
+> **Coming from 2.0.4?** Update the server and every client together — 2.1.0 will not talk to an older build. **Jotunn is no longer required**; you can remove it if nothing else on your list wants it. Coming straight here to 2.1.4, your wings, your Valkyrie Flight levels and your logbook all survive: the items keep their names and the skill keeps its identity, so nothing in your inventory or your save is touched. (If you have already been running 2.1.0, 2.1.1 or 2.1.2, read the next note.) Two config defaults move on their own — the Crude and Troll workbench requirement drops from level 3 to level 2, because upgrading needs a *higher* station than crafting and a workbench stops at level 5. If your admin had set those by hand, their values are kept as always.
+>
+> **Coming from 2.1.0, 2.1.1 or 2.1.2?** Those three builds reset your **Valkyrie Flight** level every time they loaded your character — a check in the game drops any skill it does not recognise, and the patch that made this one recognisable left with Jotunn in 2.1.0. 2.1.4 fixes it. **Update the server and every client together:** a 2.1.4 server refuses those three builds outright, because your character file lives on your own machine and a server has no other way to stop a stale client from deleting your levels. Nothing in your config changes, and nothing else on your character was ever affected.
+>
+> **Your lost level is handed back to you automatically, once, the first time you load in.** Nothing survives on the character itself, but the server still remembers what you had from the last time you flew, and 2.1.4 gives it back — with a message on screen, no commands and nothing to ask an admin for. It only ever raises a level, never lowers one, and it happens once per character. Anyone who *has* flown on a 2.1.0–2.1.2 client is past saving that way, because the server's record of them was overwritten too; `resetskill ValkyrieFlight` then `raiseskill ValkyrieFlight 86` puts them back by hand.
+>
+> **Coming from 2.1.4?** The automatic restore was in that build and gave everyone nothing — the server lost its record of what each pilot had a moment after reading it, answered "never heard of you", and the game then counted the repair as done. 2.1.5 fixes the cause and **disregards every mark 2.1.4 left**, so if you were one of the pilots it shrugged at, your restore is owed again: **updating your own game is enough**, and it happens on your next login.
+>
+> **Server admins:** the snapshot is taken the first time a 2.1.4 or newer server reads its flight registry, and written to `flight_skill_restore.dat` beside your export files. It is written once and never rewritten — **keep a copy.** Set `RestoreLostSkillLevels` to false if you would rather do it yourself.
 
 ---
 
@@ -182,6 +192,10 @@ That last line is the heart of 2.0.1. Skill is no longer a bonus sprinkled on to
 **Two honest promises:** gliding always works, at every tier and every level — so the skill can always be earned. And diving is untouched by skill, because pointing yourself at the ground is intent, and the mountain does not care how practiced you are.
 
 Death docks the skill like any other; the Valkyries respect only the living. Every XP rate, gate and bonus curve lives in the config under **"6. Valkyrie Flight Skill"** and in each tier's own section.
+
+The skill answers to Valheim's own cheats as **`ValkyrieFlight`** — `raiseskill ValkyrieFlight 40`, `resetskill ValkyrieFlight` — and both commands offer it in tab completion. One word, no space: the console splits what you type on spaces and cannot be given a quoted name. `raiseskill` **adds** to your current level rather than setting it, so to land on an exact number, reset first and then raise. These are vanilla cheats and need what vanilla cheats need — cheats enabled, and admin on a server.
+
+If a level ever goes missing, the server hands it back on your next login — once per character, upward only. Your level is also **mirrored onto your character** alongside the flight logbook, where Valheim's skill loader cannot reach it, and the mod checks at startup that the patch keeping the skill is really attached. Neither is how the skill normally persists — they are there so that a future game update or a mod conflict cannot delete anyone's progress without saying so.
 
 ## 📖 The Flight Logbook
 

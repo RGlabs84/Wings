@@ -64,6 +64,7 @@ namespace WingsoftheValkyrie
         public static SyncedConfigEntry<float> SkillGlideSinkReduction { get; private set; }
         public static SyncedConfigEntry<float> SkillGlideSpeedBonus { get; private set; }
         public static SyncedConfigEntry<float> CeilingAtNovice { get; private set; }
+        public static SyncedConfigEntry<bool> RestoreLostSkillLevels { get; private set; }
 
         // Flight logbook
         public static SyncedConfigEntry<bool> EnableFlightLog { get; private set; }
@@ -211,6 +212,11 @@ namespace WingsoftheValkyrie
             // Valkyrie Flight skill
             SkillXpPerFlap = Bind("6. Valkyrie Flight Skill", "XpPerFlap", 0.4f, new ConfigDescription("Skill XP awarded per wing flap.", rangeXp));
             SkillXpPerGlideSecond = Bind("6. Valkyrie Flight Skill", "XpPerGlideSecond", 0.2f, new ConfigDescription("Skill XP awarded per second spent gliding. This is the only way a flier below a tier's MinSkillToFlap can earn levels, so keep it above 0.", rangeXp));
+            RestoreLostSkillLevels = Bind("6. Valkyrie Flight Skill", "RestoreLostSkillLevels", true, new ConfigDescription(
+                "Hands each pilot their Valkyrie Flight level back once, the first time they load in, from the snapshot the " +
+                "server takes of its flight registry. This repairs the levels 2.1.0 to 2.1.2 destroyed. It only ever raises a " +
+                "level, never lowers one, and runs at most once per character. Safe to leave on; turn it off if you would rather " +
+                "hand levels back yourself with raiseskill."));
             SkillStaminaReduction = Bind("6. Valkyrie Flight Skill", "StaminaReductionAtMax", 0.55f, new ConfigDescription("Fraction of the flap stamina cost removed at skill level 100.", rangeFraction));
             SkillFlapPowerBonus = Bind("6. Valkyrie Flight Skill", "FlapPowerBonusAtMax", 0.5f, new ConfigDescription("Extra flap lift at skill level 100, as a fraction of the tier's base force.", rangeFraction));
             SkillGlideSinkReduction = Bind("6. Valkyrie Flight Skill", "GlideSinkReductionAtMax", 0.6f, new ConfigDescription("How much slower you sink while gliding at skill level 100 (longer glides).", rangeFraction));

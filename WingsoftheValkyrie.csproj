@@ -3,7 +3,7 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>WingsoftheValkyrie</AssemblyName>
     <Description>Valheim Wings of the Valkyrie Mod</Description>
-    <Version>2.1.1</Version>
+    <Version>2.1.5</Version>
     <!-- Gale test-profile deploy, OFF by default. Build with -p:DeployToGale=true to opt in.
          It is off because the test rig has ONE deploy owner at a time, and client and server must
          land together: a client carrying this mod cannot even connect to a server without it

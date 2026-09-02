@@ -98,7 +98,7 @@ namespace WingsoftheValkyrie
     public static class WingsoftheValkyriePlugin
     {
         public const string PluginName = "Wings of the Valkyrie";
-        public const string PluginVersion = "2.1.1";
+        public const string PluginVersion = "2.1.5";
     }
 }
 
@@ -135,4 +135,27 @@ public class ZRoutedRpc
 namespace WingsoftheValkyrie
 {
     public static partial class ModConfigExtra { }
+
+    /// <summary>
+    /// Stands in for the real restore, and records what the snapshot was offered. The property
+    /// under test is ORDERING: FlightReport must hand these rows over the instant the registry
+    /// is read off disk, before any client report can overwrite one with a reset level.
+    /// </summary>
+    public static class FlyingSkillRestore
+    {
+        public static int Captures;
+        public static readonly Dictionary<long, float> Seen = new Dictionary<long, float>();
+        private static bool _done;
+
+        public static void Reset() { Captures = 0; _done = false; Seen.Clear(); }
+
+        internal static void CaptureSnapshot(int rowCount, Action<Action<long, string, float>> visitRows)
+        {
+            if (_done) return;
+            _done = true;
+            Captures++;
+            if (visitRows == null) return;
+            visitRows((id, name, level) => Seen[id] = level);
+        }
+    }
 }
